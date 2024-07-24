@@ -101,4 +101,8 @@ public class IdService {
         return "f_" + getCommonId();
     }
 
+    public synchronized String getFoodId() {
+        return "fd_" + getCommonId();
+    }
+
 }

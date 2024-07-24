@@ -1,4 +1,4 @@
-package com.github.makewheels.aitools.oss;
+package com.github.makewheels.aitools.file;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-package com.github.makewheels.aitools.oss;
+package com.github.makewheels.aitools.file;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
@@ -117,14 +117,6 @@ public class BaseOssService {
     }
 
     /**
-     * 删除文件
-     */
-    public void deleteObject(String key) {
-        log.info("阿里云OSS删除文件: key = " + key);
-        getClient().deleteObject(bucket, key);
-    }
-
-    /**
      * 预签名下载文件
      */
     public String generatePresignedUrl(String key, Duration duration) {
@@ -145,14 +137,6 @@ public class BaseOssService {
     public void downloadFile(String key, File file) {
         log.info("阿里云OSS下载文件: key = {}, file = {}", key, file.getAbsolutePath());
         HttpUtil.downloadFile(this.getTempDownloadUrl(key), file);
-    }
-
-    /**
-     * 获取文件内容
-     */
-    public String getObjectContent(String key) {
-        log.info("阿里云OSS获取文件内容: key = {}", key);
-        return HttpUtil.get(this.getTempDownloadUrl(key));
     }
 
     /**

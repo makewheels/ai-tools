@@ -28,7 +28,7 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
 
         // 校验登录状态
         registry.addInterceptor(getCheckTokenInterceptor())
-                .addPathPatterns("/save-token.html")
+                .addPathPatterns("/food/createTask")
         ;
 
     }

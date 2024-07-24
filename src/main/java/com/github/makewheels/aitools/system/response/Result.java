@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class Result<T> {
-    private String code;
+    private Integer code;
     private String message;
     private T data;
 
@@ -35,7 +35,7 @@ public class Result<T> {
         this.data = data;
     }
 
-    public Result(String code, String message, T data) {
+    public Result(Integer code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;
@@ -70,7 +70,7 @@ public class Result<T> {
     }
 
     public static <T> Result<T> error(String message) {
-        return new Result<T>(ErrorCode.FAIL, message);
+        return new Result<T>(ErrorCode.ERROR, message);
     }
 
 }
