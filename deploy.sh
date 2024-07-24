@@ -14,6 +14,8 @@ JAVA_OUT=${APP_HOME}/logs/start.log                             # 应用的启�
 
 # 创建出相关目录
 mkdir -p ${APP_HOME}
+mkdir -p ${APP_HOME}/logs
+
 usage() {
   echo "Usage: $PROG_NAME {start|stop|restart}"
   exit 2
