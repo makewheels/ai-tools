@@ -51,13 +51,16 @@ public class BaseOssService {
      * 获取临时上传凭证
      */
     public JSONObject generateUploadCredentials(String key) {
-        DefaultProfile.addEndpoint("cn-beijing", "Sts", "sts.cn-beijing.aliyuncs.com");
-        IClientProfile profile = DefaultProfile.getProfile("cn-beijing", accessKeyId, secretKey);
+        DefaultProfile.addEndpoint(
+                "cn-beijing", "Sts", "sts.cn-beijing.aliyuncs.com");
+        IClientProfile profile = DefaultProfile.getProfile(
+                "cn-beijing", accessKeyId, secretKey);
         DefaultAcsClient client = new DefaultAcsClient(profile);
         AssumeRoleRequest request = new AssumeRoleRequest();
+        // 创建角色 https://ram.console.aliyun.com/roles
         request.setRoleArn("acs:ram::1618784280874658:role/role-oss-ai-tools");
         request.setRoleSessionName("roleSessionName-" + IdUtil.simpleUUID());
-        request.setDurationSeconds(60 * 60 * 3L);
+        request.setDurationSeconds((long) 60 * 60);
         AssumeRoleResponse response = null;
         try {
             response = client.getAcsResponse(request);
@@ -143,7 +146,8 @@ public class BaseOssService {
      * 设置对象权限
      */
     public void setObjectAcl(String key, CannedAccessControlList cannedAccessControlList) {
-        log.info("阿里云OSS设置对象权限, key = {}, cannedAccessControlList = {}", key, cannedAccessControlList);
+        log.info("阿里云OSS设置对象权限, key = {}, cannedAccessControlList = {}",
+                key, cannedAccessControlList);
         getClient().setObjectAcl(bucket, key, cannedAccessControlList);
     }
 

@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Document
+@Document("file")
 @JsonIgnoreProperties("objectInfo")
 public class File {
     @Id
