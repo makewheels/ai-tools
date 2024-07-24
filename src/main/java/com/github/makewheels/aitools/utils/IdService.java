@@ -57,8 +57,8 @@ public class IdService {
     public synchronized String nextShortId() {
         //生成时间戳
         long currentSeconds = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
-        // shortId以2022年1月1日零点作为起始时间偏移量
-        long timestamp = currentSeconds - 1640995200L;
+        // shortId以2024年1月1日零点作为起始时间偏移量
+        long timestamp = currentSeconds - 1704038400L;
         timestamp = timestamp / 60 / 60 / 24;
 
         //生成序列号

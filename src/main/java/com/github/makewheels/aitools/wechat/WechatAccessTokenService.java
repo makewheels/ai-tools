@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,9 +23,6 @@ public class WechatAccessTokenService {
     @Value("${wechat.mini-program.ai-tools.app-secret}")
     private String appSecret;
 
-    @Resource
-    private WechatCheckService wechatCheckService;
-
     private boolean isExpired() {
         return DateUtil.currentSeconds() >= expireAtInSeconds;
     }
@@ -41,7 +37,7 @@ public class WechatAccessTokenService {
         String response = HttpUtil.get("https://api.weixin.qq.com/cgi-bin/token" +
                 "?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret);
         log.info("获取微信access_token，微信返回：" + response);
-        Assert.isTrue(wechatCheckService.checkResponse(response),
+        Assert.isTrue(WechatUtils.checkResponse(response),
                 "获取微信access_token失败，response = " + response);
 
         JSONObject jsonObject = JSON.parseObject(response);

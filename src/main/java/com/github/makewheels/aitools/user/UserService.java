@@ -1,6 +1,9 @@
 package com.github.makewheels.aitools.user;
 
+import cn.hutool.core.util.IdUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.github.makewheels.aitools.utils.IdService;
+import com.github.makewheels.aitools.wechat.WechatUserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,32 @@ public class UserService {
     private UserRepository userRepository;
     @Resource
     private IdService idService;
+    @Resource
+    private WechatUserService wechatUserService;
+
+    /**
+     * 小程序登录
+     */
+    public User login(String code) {
+        JSONObject response = wechatUserService.login(code);
+        String openid = response.getString("openid");
+        return saveNewUser(openid);
+    }
+
+    /**
+     * 根据openid创建新用户
+     */
+    private User saveNewUser(String openid) {
+        User user = userRepository.getByOpenid(openid);
+        if (user == null) {
+            user = new User();
+            user.setId(idService.getUserId());
+            user.setToken("tk_" + IdUtil.getSnowflakeNextIdStr());
+            user.setOpenid(openid);
+            mongoTemplate.save(user);
+        }
+        return user;
+    }
 
     /**
      * 根据登录token获取用户
@@ -49,10 +78,9 @@ public class UserService {
 
     /**
      * 获取用户登录信息
+     * 获取token方式有两种，header和url参数
      */
     public User getUserByRequest(HttpServletRequest request) {
-        //为了更简单的，兼容YouTube搬运海外服务器，获取上传凭证时的，用户校验，
-        //获取token方式有两种，header和url参数
         String token = request.getHeader("token");
         if (StringUtils.isEmpty(token)) {
             String[] tokens = request.getParameterMap().get("token");

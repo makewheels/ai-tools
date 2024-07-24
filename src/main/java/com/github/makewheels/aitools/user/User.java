@@ -1,6 +1,5 @@
 package com.github.makewheels.aitools.user;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -16,19 +15,13 @@ public class User {
 
     @Indexed
     private String openid;
-
-    @Indexed
-    private Date createTime;
-
     @Indexed
     private String token;
+    @Indexed
+    private Date createTime;
 
     public User() {
         this.createTime = new Date();
     }
 
-    @Override
-    public String toString() {
-        return JSON.toJSONString(this);
-    }
 }

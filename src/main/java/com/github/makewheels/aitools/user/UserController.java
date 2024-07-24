@@ -14,6 +14,11 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @GetMapping("login")
+    public Result<User> login(@RequestParam String code) {
+        return Result.ok(userService.login(code));
+    }
+
     @GetMapping("getUserByToken")
     public Result<User> getUserByToken(@RequestParam String token) {
         User user = userService.getUserByToken(token);
