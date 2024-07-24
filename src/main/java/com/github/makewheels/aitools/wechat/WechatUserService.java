@@ -12,9 +12,9 @@ import org.springframework.util.Assert;
 @Service
 @Slf4j
 public class WechatUserService {
-    @Value("${wechat.official-account.aivideo.app-id}")
+    @Value("${wechat.mini-program.ai-tools.app-id}")
     private String appId;
-    @Value("${wechat.official-account.aivideo.app-secret}")
+    @Value("${wechat.mini-program.ai-tools.app-secret}")
     private String appSecret;
     @Resource
     private WechatAccessTokenService wechatAccessTokenService;

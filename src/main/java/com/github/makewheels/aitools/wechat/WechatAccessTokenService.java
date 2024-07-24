@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-
 /**
  * <a href="https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html">获取access_token</a>
  */
@@ -20,9 +19,9 @@ public class WechatAccessTokenService {
     private static String accessToken;
     private static Long expireAtInSeconds;
 
-    @Value("${wechat.official-account.aivideo.app-id}")
+    @Value("${wechat.mini-program.ai-tools.app-id}")
     private String appId;
-    @Value("${wechat.official-account.aivideo.app-secret}")
+    @Value("${wechat.mini-program.ai-tools.app-secret}")
     private String appSecret;
 
     @Resource
