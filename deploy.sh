@@ -7,7 +7,7 @@ PROG_NAME=$0
 ACTION=$1
 APP_START_TIMEOUT=60                                            # 等待应用启动的时间
 APP_PORT=443                                                    # 应用端口
-HEALTH_CHECK_URL=https://oneclick.video:${APP_PORT}/healthCheck  # 应用健康检查URL
+HEALTH_CHECK_URL=http://81.70.242.253:${APP_PORT}/healthCheck  # 应用健康检查URL
 APP_HOME=/home/admin/${APP_NAME}                                # 从package.tgz中解压出来的jar包放到这个目录下
 JAR_NAME=${APP_HOME}/video/target/video-0.0.1-SNAPSHOT.jar      # jar包的名字
 JAVA_OUT=${APP_HOME}/video/logs/start.log                             # 应用的启动日志
@@ -47,12 +47,12 @@ health_check() {
 
 start_application() {
   echo "starting java process"
-  nohup java -javaagent:/home/admin/ArmsAgent/aliyun-java-agent.jar -jar -Dspring.profiles.active=prod ${JAR_NAME} >> ${JAVA_OUT} 2>&1 &
+  nohup java -jar -Dspring.profiles.active=prod ${JAR_NAME} >> ${JAVA_OUT} 2>&1 &
   echo "started java process"
 }
 
 stop_application() {
-  checkjavapid=$(ps -ef | grep java | grep ${APP_NAME} | grep -v grep | grep -v 'deploy-video.sh' | awk '{print$2}')
+  checkjavapid=$(ps -ef | grep java | grep ${APP_NAME} | grep -v grep | grep -v 'deploy.sh' | awk '{print$2}')
 
   if [[ ! $checkjavapid ]]; then
     echo -e "\rno java process"
@@ -64,7 +64,7 @@ stop_application() {
   for e in $(seq 60); do
     sleep 1
     COSTTIME=$(($times - $e))
-    checkjavapid=$(ps -ef | grep java | grep ${APP_NAME} | grep -v grep | grep -v 'deploy-video.sh' | awk '{print$2}')
+    checkjavapid=$(ps -ef | grep java | grep ${APP_NAME} | grep -v grep | grep -v 'deploy.sh' | awk '{print$2}')
     if [[ $checkjavapid ]]; then
       kill -9 $checkjavapid
       echo -e "\r        -- stopping java lasts $(expr $COSTTIME) seconds."
