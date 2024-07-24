@@ -1,4 +1,4 @@
-package com.github.makewheels.ai_tools.password;
+package com.github.makewheels.ai_tools.system.password;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.crypto.KeyUtil;

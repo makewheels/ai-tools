@@ -1,7 +1,7 @@
 package com.github.makewheels.ai_tools;
 
 import cn.hutool.core.io.FileUtil;
-import com.github.makewheels.ai_tools.password.RSAUtil;
+import com.github.makewheels.ai_tools.system.password.RSAUtil;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

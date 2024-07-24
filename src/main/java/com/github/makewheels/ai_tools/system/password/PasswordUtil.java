@@ -1,4 +1,4 @@
-package com.github.makewheels.ai_tools.password;
+package com.github.makewheels.ai_tools.system.password;
 
 import cn.hutool.core.io.FileUtil;
 import com.github.makewheels.ai_tools.AiToolsApplication;

@@ -1,4 +1,4 @@
-package com.github.makewheels.ai_tools.password;
+package com.github.makewheels.ai_tools.system.password;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

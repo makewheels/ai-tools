@@ -1,4 +1,4 @@
-package com.github.makewheels.ai_tools.password;
+package com.github.makewheels.ai_tools.system.password;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
