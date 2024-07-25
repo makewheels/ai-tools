@@ -19,7 +19,7 @@ public class FoodController {
     }
 
     @GetMapping("startTask")
-    public Result<Food> startTask(@RequestParam String extension) {
+    public Result<Food> startTask(@RequestParam String taskId) {
         // TODO
         return Result.ok(new Food());
     }

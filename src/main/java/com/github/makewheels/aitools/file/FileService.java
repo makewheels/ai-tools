@@ -3,6 +3,7 @@ package com.github.makewheels.aitools.file;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.model.OSSObjectSummary;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.github.makewheels.aitools.file.bean.CreateFileDTO;
 import com.github.makewheels.aitools.file.bean.File;
@@ -53,16 +54,39 @@ public class FileService {
     }
 
     /**
+     * 把从OSS请求回来的文件信息，装填到file对象上
+     */
+    public void setObjectInfo(File file, OSSObject object) {
+        file.setKey(file.getKey());
+        ObjectMetadata metadata = object.getObjectMetadata();
+        file.setSize(metadata.getContentLength());
+        file.setFilename(FilenameUtils.getName(file.getKey()));
+        file.setExtension(FilenameUtils.getExtension(file.getKey()));
+        file.setStorageClass(metadata.getObjectStorageClass().toString());
+        file.setUploadTime(metadata.getLastModified());
+    }
+
+    /**
+     * 把从OSS请求回来的文件信息，装填到file对象上
+     */
+    public void setObjectInfo(File file, OSSObjectSummary objectSummary) {
+        file.setKey(objectSummary.getKey());
+        file.setSize(objectSummary.getSize());
+        file.setFilename(FilenameUtils.getName(file.getKey()));
+        file.setExtension(FilenameUtils.getExtension(file.getKey()));
+        file.setStorageClass(objectSummary.getStorageClass());
+        file.setUploadTime(objectSummary.getLastModified());
+    }
+
+    /**
      * 通知文件上传完成，和对象存储服务器确认，改变数据库File状态
      */
     public void uploadFinish(String fileId) {
         File file = fileRepository.getById(fileId);
         String key = file.getKey();
         log.info("FileService 处理文件上传完成, fileId = " + fileId + ", key = " + key);
-        OSSObject object = ossService.getObject(key);
-        ObjectMetadata objectMetadata = object.getObjectMetadata();
-        file.setSize(objectMetadata.getContentLength());
-        file.setUploadTime(objectMetadata.getLastModified());
+        OSSObject ossObject = ossService.getObject(key);
+        setObjectInfo(file, ossObject);
         file.setFileStatus(FileStatus.READY);
         mongoTemplate.save(file);
     }

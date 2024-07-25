@@ -1,13 +1,9 @@
 package com.github.makewheels.aitools.file.bean;
 
-import com.aliyun.oss.model.OSSObject;
-import com.aliyun.oss.model.OSSObjectSummary;
-import com.aliyun.oss.model.ObjectMetadata;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.makewheels.aitools.file.constants.FileStatus;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -45,25 +41,6 @@ public class File {
     public File() {
         fileStatus = FileStatus.CREATED;
         createTime = new Date();
-    }
-
-    public void setObjectInfo(OSSObject object) {
-        key = object.getKey();
-        ObjectMetadata metadata = object.getObjectMetadata();
-        size = metadata.getContentLength();
-        filename = FilenameUtils.getName(key);
-        extension = FilenameUtils.getExtension(key);
-        storageClass = metadata.getObjectStorageClass().toString();
-        uploadTime = metadata.getLastModified();
-    }
-
-    public void setObjectInfo(OSSObjectSummary objectSummary) {
-        key = objectSummary.getKey();
-        size = objectSummary.getSize();
-        filename = FilenameUtils.getName(key);
-        extension = FilenameUtils.getExtension(key);
-        storageClass = objectSummary.getStorageClass();
-        uploadTime = objectSummary.getLastModified();
     }
 
 }
