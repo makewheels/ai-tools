@@ -19,6 +19,7 @@ import com.aliyuncs.profile.IClientProfile;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.util.Assert;
 
 import java.io.File;
 import java.time.Duration;
@@ -61,22 +62,34 @@ public class BaseOssService {
         request.setRoleArn("acs:ram::1618784280874658:role/role-oss-ai-tools");
         request.setRoleSessionName("roleSessionName-" + IdUtil.simpleUUID());
         request.setDurationSeconds((long) 60 * 60);
+        request.setPolicy("""
+                {
+                    "Version": "1",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "oss:*",
+                            "Resource": "acs:oss:*:*:*"
+                        }
+                    ]
+                }
+                """);
         AssumeRoleResponse response = null;
         try {
             response = client.getAcsResponse(request);
         } catch (ClientException e) {
             log.error(ExceptionUtils.getStackTrace(e));
         }
+        Assert.notNull(response, "getAcsResponse获取临时上传凭证失败");
 
         JSONObject credentials = new JSONObject();
         credentials.put("bucket", bucket);
         credentials.put("key", key);
         credentials.put("endpoint", endpoint);
-        if (response == null) return null;
         AssumeRoleResponse.Credentials responseCredentials = response.getCredentials();
         credentials.put("accessKeyId", responseCredentials.getAccessKeyId());
-        credentials.put("secretKey", responseCredentials.getAccessKeySecret());
-        credentials.put("sessionToken", responseCredentials.getSecurityToken());
+        credentials.put("accessKeySecret", responseCredentials.getAccessKeySecret());
+        credentials.put("securityToken", responseCredentials.getSecurityToken());
         credentials.put("expiration", responseCredentials.getExpiration());
         return credentials;
     }
