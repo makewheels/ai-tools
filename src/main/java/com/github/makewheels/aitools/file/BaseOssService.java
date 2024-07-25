@@ -80,6 +80,8 @@ public class BaseOssService {
                 assumeRoleCredentials.getAccessKeyId(), assumeRoleCredentials.getAccessKeySecret(),
                 assumeRoleCredentials.getSecurityToken());
 
+        // 阿里云生成signature文档
+        // https://help.aliyun.com/zh/oss/use-cases/java-1#section-4u0-o15-yep
         String policy = stsOssClient.generatePostPolicy(expiration, policyConditions);
         String signature = stsOssClient.calculatePostSignature(policy);
         stsOssClient.shutdown();
