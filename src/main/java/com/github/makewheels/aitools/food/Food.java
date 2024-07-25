@@ -26,7 +26,6 @@ public class Food {
 
     private String status;
     private Date createTime;
-    private Date uploadTime;
-    private Date startAnalyseTime;
+    private Date analyseStartTime;
     private Date finishTime;
 }

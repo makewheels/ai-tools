@@ -8,4 +8,8 @@ import org.springframework.stereotype.Repository;
 public class FoodRepository {
     @Resource
     private MongoTemplate mongoTemplate;
+
+    public Food findById(String taskId) {
+        return mongoTemplate.findById(taskId, Food.class);
+    }
 }

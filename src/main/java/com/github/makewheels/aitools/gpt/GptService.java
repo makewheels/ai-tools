@@ -1,11 +1,14 @@
 package com.github.makewheels.aitools.gpt;
 
 import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GptService {
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
@@ -37,8 +40,11 @@ public class GptService {
                 prompt,
                 imageUrl
         );
+
+        log.info("请求GPT body = " + JSON.toJSONString(JSONObject.parseObject(body)));
         String response = HttpUtil.createPost("https://api.claudeshop.top/v1/chat/completions")
-                .body(body).execute().body();
+                .bearerAuth(apiKey).body(body).execute().body();
+        log.info("GPT响应 = " + JSON.toJSONString(JSONObject.parseObject(response)));
         return JSONObject.parseObject(response);
     }
 }

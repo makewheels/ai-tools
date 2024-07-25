@@ -15,6 +15,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 @Service
 @Slf4j
 public class FileService {
@@ -41,6 +43,14 @@ public class FileService {
 
     public void updateFile(File file) {
         mongoTemplate.save(file);
+    }
+
+    public File getById(String id) {
+        return fileRepository.getById(id);
+    }
+
+    public String getPresignedUrl(String key) {
+        return ossService.generatePresignedUrl(key, Duration.ofMinutes(10));
     }
 
     /**
