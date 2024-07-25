@@ -1,5 +1,6 @@
 package com.github.makewheels.aitools.file;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -56,41 +57,42 @@ public class BaseOssService {
                 "cn-beijing", "Sts", "sts.cn-beijing.aliyuncs.com");
         IClientProfile profile = DefaultProfile.getProfile(
                 "cn-beijing", accessKeyId, secretKey);
-        DefaultAcsClient client = new DefaultAcsClient(profile);
+        DefaultAcsClient acsClient = new DefaultAcsClient(profile);
         AssumeRoleRequest request = new AssumeRoleRequest();
         // 创建角色 https://ram.console.aliyun.com/roles
         request.setRoleArn("acs:ram::1618784280874658:role/role-oss-ai-tools");
         request.setRoleSessionName("roleSessionName-" + IdUtil.simpleUUID());
         request.setDurationSeconds((long) 60 * 60);
-        request.setPolicy("""
-                {
-                    "Version": "1",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Action": "oss:*",
-                            "Resource": "acs:oss:*:*:*"
-                        }
-                    ]
-                }
-                """);
         AssumeRoleResponse response = null;
         try {
-            response = client.getAcsResponse(request);
+            response = acsClient.getAcsResponse(request);
         } catch (ClientException e) {
             log.error(ExceptionUtils.getStackTrace(e));
         }
         Assert.notNull(response, "getAcsResponse获取临时上传凭证失败");
+        AssumeRoleResponse.Credentials assumeRoleCredentials = response.getCredentials();
+
+        Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 10);
+        PolicyConditions policyConditions = new PolicyConditions();
+        policyConditions.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, key);
+
+        OSS stsOssClient = new OSSClientBuilder().build(endpoint,
+                assumeRoleCredentials.getAccessKeyId(), assumeRoleCredentials.getAccessKeySecret(),
+                assumeRoleCredentials.getSecurityToken());
+
+        String policy = stsOssClient.generatePostPolicy(expiration, policyConditions);
+        String signature = stsOssClient.calculatePostSignature(policy);
+        stsOssClient.shutdown();
 
         JSONObject credentials = new JSONObject();
         credentials.put("bucket", bucket);
         credentials.put("key", key);
         credentials.put("endpoint", endpoint);
-        AssumeRoleResponse.Credentials responseCredentials = response.getCredentials();
-        credentials.put("accessKeyId", responseCredentials.getAccessKeyId());
-        credentials.put("accessKeySecret", responseCredentials.getAccessKeySecret());
-        credentials.put("securityToken", responseCredentials.getSecurityToken());
-        credentials.put("expiration", responseCredentials.getExpiration());
+        credentials.put("accessKeyId", assumeRoleCredentials.getAccessKeyId());
+        credentials.put("securityToken", assumeRoleCredentials.getSecurityToken());
+        credentials.put("expiration", assumeRoleCredentials.getExpiration());
+        credentials.put("policy", Base64.encode(policy));
+        credentials.put("signature", signature);
         return credentials;
     }
 
