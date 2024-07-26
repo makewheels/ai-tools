@@ -77,7 +77,7 @@ public class FoodService {
         log.info("启动食物识别任务：" + taskId + " " + JSON.toJSONString(food));
 
         File file = fileService.getById(food.getOriginalImageFileId());
-        String imageUrl = fileService.getPresignedUrl(file.getKey());
+        String imageUrl = fileService.getPresignedUrlByKey(file.getKey());
         JSONObject response = gptService.analyzeImage(PROMPT, imageUrl);
         String analyzeResult = response.getJSONArray("choices").getJSONObject(0)
                 .getJSONObject("message").getString("content");

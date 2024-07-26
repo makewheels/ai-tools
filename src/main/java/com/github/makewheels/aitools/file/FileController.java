@@ -36,7 +36,7 @@ public class FileController {
      */
     @GetMapping("access")
     public Result<JSONObject> access(@RequestParam String fileId) {
-        String url = fileService.getPresignedUrl(fileId);
+        String url = fileService.getPresignedUrlByFileId(fileId);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("url", url);
         return Result.ok(jsonObject);

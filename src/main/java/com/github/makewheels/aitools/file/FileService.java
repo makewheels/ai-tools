@@ -49,7 +49,12 @@ public class FileService {
         return fileRepository.getById(id);
     }
 
-    public String getPresignedUrl(String key) {
+    public String getPresignedUrlByFileId(String fileId) {
+        File file = getById(fileId);
+        return getPresignedUrlByKey(file.getKey());
+    }
+
+    public String getPresignedUrlByKey(String key) {
         return ossService.generatePresignedUrl(key, Duration.ofMinutes(10));
     }
 
