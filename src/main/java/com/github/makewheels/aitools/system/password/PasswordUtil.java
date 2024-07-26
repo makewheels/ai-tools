@@ -2,6 +2,7 @@ package com.github.makewheels.aitools.system.password;
 
 import cn.hutool.core.io.FileUtil;
 import com.github.makewheels.aitools.AiToolsApplication;
+import com.github.makewheels.aitools.utils.ProjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -24,9 +25,9 @@ public class PasswordUtil {
     private static String getPrivateKey(String env) {
         String path = null;
         if (env.equals("dev")) {
-            path = "D:/workSpace/~keys/ai-tools/privateKey.txt";
+            path = "D:/workSpace/~keys/" + ProjectUtils.PROJECT_NAME + "/privateKey.txt";
         } else if (env.equals("prod")) {
-            path = "/root/keys/ai-tools/privateKey.txt";
+            path = "/root/keys/" + ProjectUtils.PROJECT_NAME + "/privateKey.txt";
         }
         if (FileUtil.exist(path)) {
             return FileUtil.readUtf8String(path);

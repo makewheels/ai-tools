@@ -2,6 +2,7 @@ package com.github.makewheels.aitools;
 
 import cn.hutool.core.io.FileUtil;
 import com.github.makewheels.aitools.system.password.RSAUtil;
+import com.github.makewheels.aitools.utils.ProjectUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,8 @@ public class RSATests {
         String plain = "";
         System.out.println("plainText = " + plain);
 
-        String publicKey = FileUtil.readUtf8String("D:\\workSpace\\~keys\\ai-tools\\publicKey.txt");
+        String publicKey = FileUtil.readUtf8String(
+                "D:\\workSpace\\~keys\\" + ProjectUtils.PROJECT_NAME + "\\publicKey.txt");
 
         String cipher = RSAUtil.encrypt(publicKey, plain);
         System.out.println("cipher = " + cipher);
@@ -36,7 +38,8 @@ public class RSATests {
         String cipher = "";
         System.out.println("cipher = " + cipher);
 
-        String privateKey = FileUtil.readUtf8String("D:\\workSpace\\~keys\\ai-tools\\privateKey.txt");
+        String privateKey = FileUtil.readUtf8String(
+                "D:\\workSpace\\~keys\\" + ProjectUtils.PROJECT_NAME + "\\privateKey.txt");
 
         String plain = RSAUtil.decrypt(privateKey, cipher);
         System.out.println("plain = " + plain);

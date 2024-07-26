@@ -1,11 +1,12 @@
 package com.github.makewheels.aitools.system.redis;
 
 import cn.hutool.core.date.DateUtil;
+import com.github.makewheels.aitools.utils.ProjectUtils;
 
 import java.util.Date;
 
 public class RedisKey {
-    private static final String ROOT = "ai-tools";
+    private static final String ROOT = ProjectUtils.PROJECT_NAME;
 
     private static final String USER = ROOT + ":user";
 

@@ -19,7 +19,7 @@ public class FoodController {
         return Result.ok(foodService.createTask(extension));
     }
 
-    @GetMapping("startTask")
+    @GetMapping("startTask2")
     public Result<Void> startTask(@RequestParam String taskId) {
         ThreadUtil.execAsync(() -> foodService.startTask(taskId));
         return Result.ok();
