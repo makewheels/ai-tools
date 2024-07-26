@@ -1,6 +1,5 @@
 package com.github.makewheels.aitools.system.interceptor.token;
 
-import com.github.makewheels.aitools.system.environment.EnvironmentService;
 import com.github.makewheels.aitools.system.interceptor.InterceptorOrder;
 import com.github.makewheels.aitools.user.User;
 import com.github.makewheels.aitools.user.UserHolder;
@@ -13,9 +12,6 @@ import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * 校验需要登录的接口
  */
@@ -24,13 +20,10 @@ import java.net.URISyntaxException;
 public class CheckTokenInterceptor implements HandlerInterceptor, Ordered {
     @Resource
     private UserService userService;
-    @Resource
-    private EnvironmentService environmentService;
 
     @Override
     public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response,
-            Object handler) throws IOException, URISyntaxException {
+            HttpServletRequest request, HttpServletResponse response, Object handler) {
         //通过token获取User
         User user = userService.getUserByRequest(request);
 

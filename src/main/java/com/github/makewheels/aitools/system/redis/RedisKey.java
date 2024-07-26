@@ -5,20 +5,12 @@ import cn.hutool.core.date.DateUtil;
 import java.util.Date;
 
 public class RedisKey {
-    private static final String ROOT = "video-2022";
+    private static final String ROOT = "ai-tools";
 
     private static final String USER = ROOT + ":user";
 
     private static final String INCREASE_SHORT_ID = ROOT + ":increaseShortId";
     private static final String INCREASE_LONG_ID = ROOT + ":increaseLongId";
-
-    public static String ip(String ip) {
-        return ROOT + ":ip:" + ip;
-    }
-
-    public static String verificationCode(String phone) {
-        return USER + ":verificationCode:" + phone;
-    }
 
     public static String token(String token) {
         return USER + ":token:" + token;
