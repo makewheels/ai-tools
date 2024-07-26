@@ -31,4 +31,15 @@ public class FileController {
         return Result.ok();
     }
 
+    /**
+     * 访问文件
+     */
+    @GetMapping("access")
+    public Result<JSONObject> access(@RequestParam String fileId) {
+        String url = fileService.getPresignedUrl(fileId);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("url", url);
+        return Result.ok(jsonObject);
+    }
+
 }
