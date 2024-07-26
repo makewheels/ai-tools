@@ -12,7 +12,6 @@ import java.util.Date;
 @RestController
 @Slf4j
 public class HealthCheckController {
-
     @GetMapping("healthCheck")
     public String healthCheck() {
         HttpServletRequest request = RequestUtil.getRequest();
