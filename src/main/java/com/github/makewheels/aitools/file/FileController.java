@@ -3,6 +3,7 @@ package com.github.makewheels.aitools.file;
 import com.alibaba.fastjson.JSONObject;
 import com.github.makewheels.aitools.system.response.Result;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,11 +36,10 @@ public class FileController {
      * 访问文件
      */
     @GetMapping("access")
-    public Result<JSONObject> access(@RequestParam String fileId) {
+    public void access(@RequestParam String fileId, HttpServletResponse response) {
         String url = fileService.getPresignedUrlByFileId(fileId);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("url", url);
-        return Result.ok(jsonObject);
+        response.setHeader("Location", url);
+        response.setStatus(302);
     }
 
 }
