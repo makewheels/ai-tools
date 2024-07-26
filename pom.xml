@@ -117,11 +117,6 @@
             <version>2.3.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>io.lettuce</groupId>
-            <artifactId>lettuce-core</artifactId>
-            <version>6.1.10.RELEASE</version>
-        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
