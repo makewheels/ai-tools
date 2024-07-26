@@ -13,7 +13,7 @@ import java.util.Date;
 @RestController
 @Slf4j
 public class HealthCheckController {
-    @Value("${spring.redis.host}")
+    @Value("${:spring.redis.host}")
     private String redisHost;
 
     @GetMapping("healthCheck")
