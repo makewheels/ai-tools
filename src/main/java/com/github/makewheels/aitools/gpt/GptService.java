@@ -42,8 +42,8 @@ public class GptService {
         );
 
         log.info("请求GPT body = " + JSON.toJSONString(JSONObject.parseObject(body)));
-        String url = "https://api.claudeshop.top/v1/chat/completions";
-//        String url = "https://api.claude-plus.top/v1/chat/completions";
+//        String url = "https://api.claudeshop.top/v1/chat/completions";
+        String url = "https://api.claude-plus.top/v1/chat/completions";
         String response = HttpUtil.createPost(url)
                 .bearerAuth(apiKey).body(body).execute().body();
         log.info("GPT响应 = " + JSON.toJSONString(JSONObject.parseObject(response)));
