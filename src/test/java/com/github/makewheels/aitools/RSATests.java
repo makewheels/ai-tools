@@ -21,7 +21,7 @@ public class RSATests {
     @Test
     @Disabled
     public void encrypt() {
-        String plain = "";
+        String plain = "sk-Oj3xC132MYS2JM2lF73668E1E5F9485aB65481100bF9C2C9";
         System.out.println("plainText = " + plain);
 
         String publicKey = FileUtil.readUtf8String(

@@ -1,7 +1,6 @@
 package com.github.makewheels.aitools.food;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.makewheels.aitools.file.FileService;
 import com.github.makewheels.aitools.file.bean.CreateFileDTO;
 import com.github.makewheels.aitools.file.bean.File;
@@ -78,9 +77,8 @@ public class FoodService {
 
         File file = fileService.getById(food.getOriginalImageFileId());
         String imageUrl = fileService.getPresignedUrlByKey(file.getKey());
-        JSONObject response = gptService.analyzeImage(PROMPT, imageUrl);
-        String analyzeResult = response.getJSONArray("choices").getJSONObject(0)
-                .getJSONObject("message").getString("content");
+        String analyzeResult = gptService.analyzeImage(PROMPT, imageUrl);
+
         food.setResult(analyzeResult);
         food.setFinishTime(new Date());
         food.setStatus(FoodStatus.FINISHED);
