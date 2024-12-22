@@ -90,7 +90,7 @@ public class FoodService {
         log.info("创建食物识别任务：" + food.getId() + " " + JSON.toJSONString(food));
 
         // 反向更新文件的key
-        file.setKey(OssPathUtil.getFoodImage(food, file));
+        file.setKey(OssPathUtil.getFoodImageFile(food, file));
         fileService.updateFile(file);
         return food;
     }
