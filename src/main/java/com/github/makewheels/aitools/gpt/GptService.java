@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class GptService {
     /**
      * 发送post请求到OpenAI
      */
+    @Retryable
     private String postRequest(String url, String body) {
         body = JSON.toJSONString(JSONObject.parseObject(body));
 
