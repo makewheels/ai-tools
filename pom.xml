@@ -48,6 +48,11 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.25</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.3</version>
+        </dependency>
 
         <!--fastjson-->
         <dependency>
@@ -113,7 +118,7 @@
             <version>2.3.3</version>
         </dependency>
 
-       <!--飞书文档-->
+        <!--飞书文档-->
         <dependency>
             <groupId>com.larksuite.oapi</groupId>
             <artifactId>oapi-sdk</artifactId>

@@ -24,70 +24,93 @@ public class WordService {
             返回示例：
             {
               "results": [
-                {
-                  "word": "apple",
-                  "meanings": [
-                    "a round fruit with red or green skin and a whitish interior",
-                    "a tech company that produces electronics and software"
-                  ],
-                  "example_sentences": [
-                    "I ate an apple for breakfast.",
-                    "Apple is releasing a new iPhone next week."
-                  ]
-                },
-                {
-                  "word": "banana",
-                  "meanings": [
-                    "a long, curved fruit with a yellow skin",
-                    "a person who is overly enthusiastic or eccentric"
-                  ],
-                  "example_sentences": [
-                    "I had a banana with my cereal this morning.",
-                    "He is acting like a banana today, very funny!"
-                  ]
-                }
-              ]
+                 {
+                   "word": "play",
+                   "pronunciation": "/pleɪ/",
+                   "meanings": [
+                     {
+                       "partOfSpeech": "v.",
+                       "meaningEnglish": "to engage in an activity for enjoyment or recreation",
+                       "meaningChinese": "玩，娱乐",
+                       "exampleEnglish": "Let's play basketball this afternoon.",
+                       "exampleChinese": "今天下午我们去打篮球吧。"
+                     },
+                     {
+                       "partOfSpeech": "v.",
+                       "meaningEnglish": "to perform music or a musical instrument",
+                       "meaningChinese": "演奏（音乐或乐器）",
+                       "exampleEnglish": "She plays the guitar really well.",
+                       "exampleChinese": "她吉他弹得很好。"
+                     },
+                     {
+                       "partOfSpeech": "n.",
+                       "meaningEnglish": "an activity or game for entertainment",
+                       "meaningChinese": "比赛，游戏",
+                       "exampleEnglish": "We had a great time at the play last night.",
+                       "exampleChinese": "我们昨晚在戏剧表演中度过了愉快的时光。"
+                     }
+                   ]
+                 }
+               ]
             }
             """;
 
-    private static final String WORD_JSON_SCHEMA = """
+    private static final String WORD_JSON_SCHEMA =
+            """
             {
+              "$schema": "http://json-schema.org/draft-07/schema#",
               "type": "object",
               "properties": {
-                "results": {
+                "word": {
+                  "type": "string",
+                  "description": "The word being defined"
+                },
+                "pronunciation": {
+                  "type": "string",
+                  "description": "The phonetic pronunciation of the word"
+                },
+                "meanings": {
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
-                      "word": {
+                      "partOfSpeech": {
                         "type": "string",
-                        "description": "单词"
+                        "description": "The part of speech (e.g., noun, verb, etc.)"
                       },
-                      "meanings": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "description": "单词的含义"
-                        },
-                        "description": "单词的含义数组"
+                      "meaningEnglish": {
+                        "type": "string",
+                        "description": "The meaning of the word in English"
                       },
-                      "example_sentences": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "description": "常用例句"
-                        },
-                        "description": "常用用法例句数组"
+                      "meaningChinese": {
+                        "type": "string",
+                        "description": "The meaning of the word in Chinese"
+                      },
+                      "exampleEnglish": {
+                        "type": "string",
+                        "description": "An example sentence in English"
+                      },
+                      "exampleChinese": {
+                        "type": "string",
+                        "description": "The example sentence translated into Chinese"
                       }
                     },
-                    "required": ["word", "meanings", "example_sentences"],
-                    "additionalProperties": false
+                    "required": [
+                      "partOfSpeech",
+                      "meaningEnglish",
+                      "meaningChinese",
+                      "exampleEnglish",
+                      "exampleChinese"
+                    ]
                   },
-                  "description": "返回的单词含义和例句数组"
+                  "description": "A list of meanings for the word"
                 }
               },
-              "required": ["results"],
-              "additionalProperties": false
+              "required": [
+                "word",
+                "pronunciation",
+                "meanings"
+              ]
             }
             """;
 
