@@ -105,7 +105,7 @@ public class GptService {
         return JSON.parseObject(this.extractContentFromResponse(response));
     }
 
-    private static String wordSchema = """
+    private static final String WORD_SCHEMA = """
             {
               "type": "object",
               "properties": {
@@ -194,6 +194,6 @@ public class GptService {
         messageList.add(userMessage);
 
         GptService gptService = new GptService();
-        gptService.jsonModel(messageList, wordSchema);
+        gptService.jsonModel(messageList, WORD_SCHEMA);
     }
 }
