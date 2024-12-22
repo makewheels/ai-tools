@@ -6,10 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Meaning {
-    private String exampleChinese;
-    private String exampleEnglish;
     private String partOfSpeech;
     private String meaningChinese;
+    private String exampleChinese;
+    private String exampleEnglish;
 
     private String imagePrompt;
 

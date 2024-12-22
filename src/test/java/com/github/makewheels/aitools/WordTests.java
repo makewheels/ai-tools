@@ -47,7 +47,7 @@ public class WordTests {
             for (Meaning meaning : word.getMeanings()) {
                 writer.addText(fontSmall, meaning.getPartOfSpeech() + meaning.getMeaningChinese());
                 writer.addText(fontSmall, meaning.getExampleEnglish() + " " + meaning.getExampleChinese());
-                writer.addPicture(new File(meaning.getImageFilePath()), 512, 512);
+                writer.addPicture(new File(meaning.getImageFilePath()), 256, 256);
                 writer.addText(fontSmall, "");
             }
             writer.addText(fontSmall, "");

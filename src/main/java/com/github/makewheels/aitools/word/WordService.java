@@ -24,12 +24,12 @@ public class WordService {
             我正在做一个英语学习教程，面向初学者，需要你根据用户输入的单词，给出单词的含义发音例句等等信息，
             具体要求如下：
             1.注意你给出的用法一定要是日常美国人实际在用的，不要教科书上不符合实际的，
-            2.例句要简单，因为我们以学这个单词为主
+            2.例句要简单，因为我们以学这个单词为主。
             3.词性partOfSpeech用n. adj. 这种形式表达，不要用noun
             4.imagePrompt用来生成这个例句的插画的提示词，用来让AI生成图片插图，辅助学生理解例句，
                 你要描述这个画中的内容，场景，和作画风格。作画风格要稍微简单一些，以学习英语单词为主，不要喧宾夺主
             
-            请求示例：apple,banana
+            请求示例：play,banana
             返回示例：
             {
               "results": [
@@ -66,75 +66,75 @@ public class WordService {
 
     private static final String WORD_JSON_SCHEMA =
             """
-                    {
-                      "type": "object",
-                      "properties": {
-                        "results": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "word": {
-                                "type": "string",
-                                "description": "The word being defined"
-                              },
-                              "pronunciation": {
-                                "type": "string",
-                                "description": "The phonetic pronunciation of the word"
-                              },
-                              "meanings": {
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "partOfSpeech": {
-                                      "type": "string",
-                                      "description": "The part of speech (e.g., noun, verb, etc.)"
-                                    },
-                                    "meaningChinese": {
-                                      "type": "string",
-                                      "description": "The meaning of the word in Chinese"
-                                    },
-                                    "exampleEnglish": {
-                                      "type": "string",
-                                      "description": "An example sentence in English"
-                                    },
-                                    "exampleChinese": {
-                                      "type": "string",
-                                      "description": "The example sentence translated into Chinese"
-                                    },
-                                    "imagePrompt": {
-                                      "type": "string",
-                                      "description": "A visual description for generating an image that illustrates the example sentence"
-                                    }
-                                  },
-                                  "required": [
-                                    "partOfSpeech",
-                                    "meaningChinese",
-                                    "exampleEnglish",
-                                    "exampleChinese",
-                                    "imagePrompt"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                "description": "A list of meanings for the word"
-                              }
-                            },
-                            "required": [
-                              "word",
-                              "pronunciation",
-                              "meanings"
-                            ],
-                            "additionalProperties": false
-                          }
-                        }
+            {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "word": {
+                        "type": "string",
+                        "description": "The word being defined"
                       },
-                      "required": [
-                        "results"
-                      ],
-                      "additionalProperties": false
-                    }
-                    """;
+                      "pronunciation": {
+                        "type": "string",
+                        "description": "The phonetic pronunciation of the word"
+                      },
+                      "meanings": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "partOfSpeech": {
+                              "type": "string",
+                              "description": "The part of speech (e.g., noun, verb, etc.)"
+                            },
+                            "meaningChinese": {
+                              "type": "string",
+                              "description": "The meaning of the word in Chinese"
+                            },
+                            "exampleEnglish": {
+                              "type": "string",
+                              "description": "An example sentence in English"
+                            },
+                            "exampleChinese": {
+                              "type": "string",
+                              "description": "The example sentence translated into Chinese"
+                            },
+                            "imagePrompt": {
+                              "type": "string",
+                              "description": "A visual description for generating an image that illustrates the example sentence"
+                            }
+                          },
+                          "required": [
+                            "partOfSpeech",
+                            "meaningChinese",
+                            "exampleEnglish",
+                            "exampleChinese",
+                            "imagePrompt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "description": "A list of meanings for the word"
+                      }
+                    },
+                    "required": [
+                      "word",
+                      "pronunciation",
+                      "meanings"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "results"
+              ],
+              "additionalProperties": false
+            }
+            """;
 
     public List<Word> getWordExplain(List<String> wordList) {
         List<Message> messageList = new ArrayList<>();
