@@ -1,10 +1,12 @@
 package com.github.makewheels.aitools.word;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.github.makewheels.aitools.gpt.GptService;
 import com.github.makewheels.aitools.gpt.Message;
 import com.github.makewheels.aitools.gpt.ROLE;
+import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -149,6 +151,17 @@ public class WordService {
 
         String responseContent = gptService.completionJsonSchema(messageList, WORD_JSON_SCHEMA);
         JSONArray results = JSON.parseObject(responseContent).getJSONArray("results");
-        return JSON.parseArray(JSON.toJSONString(results), Word.class);
+
+        // 生成图片
+        List<Word> words = JSON.parseArray(JSON.toJSONString(results), Word.class);
+        for (Word word : words) {
+            for (Meaning meaning : word.getMeanings()) {
+                String imagePrompt = meaning.getImagePrompt();
+                meaning.setImagePromptMd5(DigestUtil.md5Hex(meaning.getImagePrompt()));
+                meaning.setImageUrl(gptService.generateImage(imagePrompt));
+            }
+        }
+
+        return words;
     }
 }

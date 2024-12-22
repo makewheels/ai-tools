@@ -1,22 +1,40 @@
 package com.github.makewheels.aitools;
 
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.poi.word.Word07Writer;
 import com.github.makewheels.aitools.word.WordService;
 import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
+@Slf4j
 public class WordTests {
     @Resource
     private WordService wordService;
+
+    private static final String FOLDER = "C:\\Users\\miuser\\Downloads\\words\\";
+
+    private void downloadImages(List<Word> words) {
+        for (Word word : words) {
+            for (Meaning meaning : word.getMeanings()) {
+                String imagePromptMd5 = meaning.getImagePromptMd5();
+                String imageUrl = meaning.getImageUrl();
+                File imageFile = new File(FOLDER, "images/" + imagePromptMd5 + ".png");
+                meaning.setImageFilePath(imageFile.getAbsolutePath());
+                log.info("下载文件 " + imageFile.getName() + " " + imageUrl);
+                HttpUtil.downloadFile(imageUrl, imageFile);
+            }
+        }
+    }
 
     private void write(List<Word> words) {
         Word07Writer writer = new Word07Writer();
@@ -29,12 +47,13 @@ public class WordTests {
             for (Meaning meaning : word.getMeanings()) {
                 writer.addText(fontSmall, meaning.getPartOfSpeech() + meaning.getMeaningChinese());
                 writer.addText(fontSmall, meaning.getExampleEnglish() + " " + meaning.getExampleChinese());
+                writer.addPicture(new File(meaning.getImageFilePath()), 512, 512);
                 writer.addText(fontSmall, "");
             }
             writer.addText(fontSmall, "");
         }
 
-        writer.flush(FileUtil.file("C:\\Users\\miuser\\Downloads\\words\\" + System.currentTimeMillis() + ".docx"));
+        writer.flush(new File(FOLDER, "doc/" + System.currentTimeMillis() + ".docx"));
         writer.close();
     }
 
@@ -42,6 +61,7 @@ public class WordTests {
     public void test() {
         List<String> wordList = Arrays.asList("你就随便生成几个常用的单词就行");
         List<Word> words = wordService.getWordExplain(wordList);
+        this.downloadImages(words);
         this.write(words);
 
     }
