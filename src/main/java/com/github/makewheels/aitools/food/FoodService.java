@@ -39,6 +39,37 @@ public class FoodService {
     }
 
     /**
+     * 分析食物图片
+     */
+    public String analyzeImage(String userContent, String imageUrl) {
+        String json = """
+                {
+                    "model": "%s",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "%s"
+                                },
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": "%s"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+                """;
+        String body = String.format(json, GptService.MODEL, userContent, imageUrl);
+
+        return gptService.completion(body);
+    }
+
+    /**
      * 创建任务
      */
     public Food createTask(String extension) {
@@ -77,7 +108,7 @@ public class FoodService {
 
         File file = fileService.getById(food.getOriginalImageFileId());
         String imageUrl = fileService.getPresignedUrlByKey(file.getKey());
-        String analyzeResult = gptService.analyzeImage(PROMPT, imageUrl);
+        String analyzeResult = analyzeImage(PROMPT, imageUrl);
 
         food.setResult(analyzeResult);
         food.setFinishTime(new Date());
