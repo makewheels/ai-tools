@@ -33,5 +33,4 @@ public class WordTests {
         wordHelper.writeDocFile(wordList);
     }
 
-
 }
