@@ -15,6 +15,7 @@ import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -138,13 +139,15 @@ public class WordHelper {
         for (Word word : wordList) {
             // 删除老的
             Word oldWord = wordRepository.getByContent(word.getContent());
-            for (Meaning meaning : oldWord.getMeanings()) {
-                if (StringUtils.isEmpty(meaning.getImageFileId())){
-                    continue;
+            if (oldWord != null && CollectionUtils.isNotEmpty(oldWord.getMeanings())) {
+                for (Meaning meaning : oldWord.getMeanings()) {
+                    if (StringUtils.isEmpty(meaning.getImageFileId())) {
+                        continue;
+                    }
+                    fileService.deleteFile(meaning.getImageFileId());
                 }
-                fileService.deleteFile(meaning.getImageFileId());
+                wordRepository.delete(oldWord.getId());
             }
-            wordRepository.delete(oldWord.getId());
 
             // 插入新的
             word.setId(idService.getWordId());
