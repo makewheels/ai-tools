@@ -3,24 +3,30 @@ package com.github.makewheels.aitools.word;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.github.makewheels.aitools.file.FileService;
 import com.github.makewheels.aitools.gpt.GptService;
 import com.github.makewheels.aitools.gpt.Message;
 import com.github.makewheels.aitools.gpt.ROLE;
-import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
+import com.github.makewheels.aitools.word.response.MeaningResponse;
+import com.github.makewheels.aitools.word.response.WordResponse;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class WordService {
     @Resource
     private GptService gptService;
     @Resource
-    private IdService idService;
+    private WordRepository wordRepository;
+    @Resource
+    private FileService fileService;
 
     private static final String SYSTEM_PROMPT = """
             我正在做一个英语学习教程，面向初学者，需要你根据用户输入的单词，给出单词的几种含义发音例句等等信息，
@@ -132,7 +138,7 @@ public class WordService {
                     }
                     """;
 
-    public List<Word> getWordExplain(List<String> wordList) {
+    public List<Word> getWordExplain(String wordList) {
         List<Message> messageList = new ArrayList<>();
         Message systemMessage = new Message();
         systemMessage.setRole(ROLE.SYSTEM);
@@ -140,7 +146,7 @@ public class WordService {
 
         Message userMessage = new Message();
         userMessage.setRole(ROLE.USER);
-        userMessage.setContent("给我这几个单词的含义: " + StringUtils.join(wordList, ","));
+        userMessage.setContent("给我这几个单词的含义: " + wordList);
 
         messageList.add(systemMessage);
         messageList.add(userMessage);
@@ -176,5 +182,18 @@ public class WordService {
             }
         }
         return map;
+    }
+
+    private WordResponse convertToResponse(Word word) {
+        return JSON.parseObject(JSON.toJSONString(word), WordResponse.class);
+    }
+
+    public WordResponse randomPick() {
+        Word word = wordRepository.randomPick();
+        WordResponse wordResponse = this.convertToResponse(word);
+        for (MeaningResponse meaning : wordResponse.getMeanings()) {
+            meaning.setImageUrl(fileService.getPresignedUrlByFileId(meaning.getImageFileId()));
+        }
+        return wordResponse;
     }
 }

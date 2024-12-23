@@ -20,7 +20,8 @@ public class WordTests {
     private WordHelper wordHelper;
 
     private void requestWords() {
-        List<Word> wordList = wordService.getWordExplain(List.of("free"));
+        List<Word> wordList = wordService.getWordExplain(
+                "journey, curious, reason, beautiful, admire, quiet, solve, arrive, improve, strong");
         Map<String, String> imageMap = wordService.getImage(wordList);
         wordHelper.export(wordList, imageMap);
     }
