@@ -17,7 +17,7 @@ public class Word {
     private String id;
 
     @Indexed
-    private String word;
+    private String content;
     private String pronunciation;
     private List<Meaning> meanings;
 

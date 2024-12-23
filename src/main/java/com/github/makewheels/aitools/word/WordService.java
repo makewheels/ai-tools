@@ -6,21 +6,21 @@ import com.alibaba.fastjson.JSONArray;
 import com.github.makewheels.aitools.gpt.GptService;
 import com.github.makewheels.aitools.gpt.Message;
 import com.github.makewheels.aitools.gpt.ROLE;
+import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class WordService {
     @Resource
     private GptService gptService;
+    @Resource
+    private IdService idService;
 
     private static final String SYSTEM_PROMPT = """
             我正在做一个英语学习教程，面向初学者，需要你根据用户输入的单词，给出单词的几种含义发音例句等等信息，
@@ -37,7 +37,7 @@ public class WordService {
             {
               "results": [
                  {
-                   "word": "play",
+                   "content": "play",
                    "pronunciation": "/pleɪ/",
                    "meanings": [
                      {
@@ -70,7 +70,7 @@ public class WordService {
                           "items": {
                             "type": "object",
                             "properties": {
-                              "word": {
+                              "content": {
                                 "type": "string",
                                 "description": "The word being defined"
                               },
@@ -117,7 +117,7 @@ public class WordService {
                               }
                             },
                             "required": [
-                              "word",
+                              "content",
                               "pronunciation",
                               "meanings"
                             ],
@@ -147,9 +147,22 @@ public class WordService {
 
         String responseContent = gptService.completionJsonSchema(messageList, WORD_JSON_SCHEMA);
         JSONArray results = JSON.parseObject(responseContent).getJSONArray("results");
-        return JSON.parseArray(JSON.toJSONString(results), Word.class);
+        List<Word> words = JSON.parseArray(JSON.toJSONString(results), Word.class);
+
+        for (Word word : words) {
+            for (Meaning meaning : word.getMeanings()) {
+                String imagePrompt = meaning.getImagePrompt();
+                meaning.setImagePromptMd5(DigestUtil.md5Hex(imagePrompt));
+            }
+        }
+        return words;
     }
 
+    /**
+     * 获取图片
+     *
+     * @return promptMd5 -> imageUrl
+     */
     public Map<String, String> getImage(List<Word> wordList) {
         Map<String, String> map = new HashMap<>();
         for (Word word : wordList) {

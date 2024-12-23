@@ -105,4 +105,8 @@ public class IdService {
         return "fd_" + getCommonId();
     }
 
+    public synchronized String getWordId() {
+        return "w_" + getCommonId();
+    }
+
 }
