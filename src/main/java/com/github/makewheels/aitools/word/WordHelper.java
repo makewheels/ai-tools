@@ -1,11 +1,16 @@
 package com.github.makewheels.aitools.word;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.poi.word.Word07Writer;
 import com.alibaba.fastjson.JSON;
+import com.github.makewheels.aitools.file.FileService;
+import com.github.makewheels.aitools.file.bean.CreateFileDTO;
+import com.github.makewheels.aitools.file.constants.FileType;
 import com.github.makewheels.aitools.utils.IdService;
+import com.github.makewheels.aitools.utils.OssPathUtil;
 import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
 import jakarta.annotation.Resource;
@@ -19,6 +24,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +35,8 @@ public class WordHelper {
     private IdService idService;
     @Resource
     private WordRepository wordRepository;
+    @Resource
+    private FileService fileService;
 
     public static final File BASE_FOLDER = new File("C:/Users/miuser/Downloads/word-folder");
     public static final File WORDS_FOLDER = new File(BASE_FOLDER, "words");
@@ -115,7 +123,54 @@ public class WordHelper {
      * 导入
      */
     public void importWords(MultipartFile multipartFile) throws IOException {
+        log.info("开始导入单词, 上传文件大小 = " + FileUtil.readableFileSize(multipartFile.getSize()));
+        // 解压
+        File zipFile = FileUtil.createTempFile();
+        multipartFile.transferTo(zipFile);
+        File uncompressedFolder = new File(zipFile.getParentFile(), IdUtil.simpleUUID());
+        ZipUtil.unzip(zipFile.getAbsolutePath(), uncompressedFolder.getAbsolutePath());
+        FileUtil.del(zipFile);
 
+        // 解析单词
+        List<Word> wordList = this.parse(uncompressedFolder);
+
+        // 保存到数据库
+        for (Word word : wordList) {
+            // 删除老的
+            Word oldWord = wordRepository.getByContent(word.getContent());
+            for (Meaning meaning : oldWord.getMeanings()) {
+                if (StringUtils.isEmpty(meaning.getImageFileId())){
+                    continue;
+                }
+                fileService.deleteFile(meaning.getImageFileId());
+            }
+            wordRepository.delete(oldWord.getId());
+
+            // 插入新的
+            word.setId(idService.getWordId());
+            word.setCreateTime(new Date());
+            wordRepository.save(word);
+
+            // 上传文件到对象存储
+            for (Meaning meaning : word.getMeanings()) {
+                CreateFileDTO createFileDTO = new CreateFileDTO();
+                createFileDTO.setFileType(FileType.WORD_IMAGE);
+                createFileDTO.setExtension("png");
+                createFileDTO.setKey(OssPathUtil.getWordImageFile(word.getContent(), meaning.getImagePromptMd5()));
+
+                String imageFileId = fileService.createNewFile(createFileDTO).getId();
+                meaning.setImageFileId(imageFileId);
+                wordRepository.save(word);
+
+                File imageFolder = new File(uncompressedFolder, word.getContent() + "/images");
+                fileService.uploadFile(imageFileId, this.getImageFile(imageFolder, meaning));
+
+                fileService.uploadFinish(imageFileId);
+            }
+        }
+
+        FileUtil.del(uncompressedFolder);
+        log.info("单词导入完成");
     }
 
 }

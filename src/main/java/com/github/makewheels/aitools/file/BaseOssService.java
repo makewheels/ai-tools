@@ -99,6 +99,14 @@ public class BaseOssService {
     }
 
     /**
+     * 上传文件
+     */
+    public void uploadFile(String key, File uploadFile) {
+        log.info("阿里云OSS上传文件，请求key = " + key);
+        getClient().putObject(bucket, key, uploadFile);
+    }
+
+    /**
      * 判断object是否存在
      */
     public boolean doesObjectExist(String key) {
@@ -180,4 +188,11 @@ public class BaseOssService {
         getClient().copyObject(copyObjectRequest);
     }
 
+    /**
+     * 删除object
+     */
+    public void deleteByKey(String key) {
+        log.info("阿里云OSS删除object, key = {}", key);
+        getClient().deleteObject(bucket, key);
+    }
 }

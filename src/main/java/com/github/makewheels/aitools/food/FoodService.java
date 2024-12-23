@@ -79,7 +79,6 @@ public class FoodService {
         createFileDTO.setExtension(extension);
         createFileDTO.setFileType(FileType.FOOD_IMAGE);
         File file = fileService.createNewFile(createFileDTO);
-        log.info("创建文件：" + file.getId() + " " + JSON.toJSONString(file));
 
         // 创建识别食物任务
         Food food = new Food();

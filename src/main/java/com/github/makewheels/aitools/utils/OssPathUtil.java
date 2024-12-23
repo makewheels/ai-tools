@@ -29,4 +29,8 @@ public class OssPathUtil {
     public static String getWordImagesFolder(String word) {
         return getWordFolder(word) + "/" + "images";
     }
+
+    public static String getWordImageFile(String word, String imagePromptMd5) {
+        return getWordImagesFolder(word) + "/" + imagePromptMd5 + ".png";
+    }
 }

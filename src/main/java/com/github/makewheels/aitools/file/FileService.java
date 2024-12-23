@@ -37,8 +37,26 @@ public class FileService {
         file.setFilename(FilenameUtils.getName(createFileDTO.getKey()));
         file.setExtension(createFileDTO.getExtension());
         file.setFileType(createFileDTO.getFileType());
+        log.info("创建文件：" + file.getId() + " " + JSON.toJSONString(file));
         mongoTemplate.save(file);
         return file;
+    }
+
+    /**
+     * 上传文件
+     */
+    public void uploadFile(String fileId, java.io.File uploadFile) {
+        File databaseFile = fileRepository.getById(fileId);
+        ossService.uploadFile(databaseFile.getKey(), uploadFile);
+    }
+
+    public void deleteFile(String fileId) {
+        File file = fileRepository.getById(fileId);
+        if(file == null){
+            return;
+        }
+        ossService.deleteByKey(file.getKey());
+        fileRepository.deleteById(fileId);
     }
 
     public void updateFile(File file) {

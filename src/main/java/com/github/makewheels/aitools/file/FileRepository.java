@@ -28,4 +28,10 @@ public class FileRepository {
         return mongoTemplate.find(Query.query(Criteria.where("id").in(ids)), File.class);
     }
 
+    /**
+     * 删除文件
+     */
+    public void deleteById(String fileId) {
+        mongoTemplate.remove(Query.query(Criteria.where("id").is(fileId)), File.class);
+    }
 }
