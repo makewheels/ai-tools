@@ -21,7 +21,8 @@ public class WordTests {
 
     private void requestWords() {
         List<Word> wordList = wordService.getWordExplain(
-                "journey, curious, reason, beautiful, admire, quiet, solve, arrive, improve, strong");
+                "eat, drink, sleep, work, play, study, talk, walk, listen, watch"
+        );
         Map<String, String> imageMap = wordService.getImage(wordList);
         wordHelper.export(wordList, imageMap);
     }
