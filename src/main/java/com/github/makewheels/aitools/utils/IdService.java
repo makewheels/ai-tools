@@ -22,8 +22,7 @@ public class IdService {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    private synchronized String nextId(
-            Duration duration, int serialNumberLength, int randomLength) {
+    private synchronized String nextId(Duration duration, int serialNumberLength, int randomLength) {
         // 时间戳，当前时间
         long currentTime = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli();
         // 起始时间
@@ -109,4 +108,7 @@ public class IdService {
         return "w_" + getCommonId();
     }
 
+    public synchronized String getWoodBookId() {
+        return "wb_" + getCommonId();
+    }
 }
