@@ -18,8 +18,8 @@ public class GptService {
     private String apiKey;
 
     private static final String BASE_URL = "https://api.open-proxy.cn";
-    private static final String CHAT_COMPLETION_URL = BASE_URL + "/v1/chat/completions";
-    private static final String IMAGE_GENERATION_URL = BASE_URL + "/v1/images/generations";
+    private static final String CHAT_COMPLETIONS_URL = BASE_URL + "/v1/chat/completions";
+    private static final String IMAGES_GENERATIONS_URL = BASE_URL + "/v1/images/generations";
 
     public static final String MODEL = "gpt-4o-2024-11-20";
 
@@ -59,7 +59,7 @@ public class GptService {
      * 向gpt发请求
      */
     public String completion(String body) {
-        String response = this.postRequest(CHAT_COMPLETION_URL, body);
+        String response = this.postRequest(CHAT_COMPLETIONS_URL, body);
         return this.extractContentFromResponse(JSONObject.parseObject(response));
     }
 
@@ -99,7 +99,7 @@ public class GptService {
                 }
                 """;
         String body = String.format(json, prompt);
-        String response = this.postRequest(IMAGE_GENERATION_URL, body);
+        String response = this.postRequest(IMAGES_GENERATIONS_URL, body);
         return JSON.parseObject(response).getJSONArray("data").getJSONObject(0).getString("url");
     }
 
