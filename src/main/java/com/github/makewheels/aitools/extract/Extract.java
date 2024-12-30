@@ -1,30 +1,30 @@
-package com.github.makewheels.aitools.food;
+package com.github.makewheels.aitools.extract;
 
-import lombok.Data;
+import com.github.makewheels.aitools.food.TaskStatus;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Data
-@Document("food")
-public class Food {
+@Getter
+@Setter
+@Document("extract")
+public class Extract {
     @Id
     private String id;
-    @Indexed
+
     private String userId;
 
-    private String prompt;
     private String originalImageFileId;
-    private String result;
 
     private String status;
     private Date createTime;
     private Date startTime;
     private Date finishTime;
 
-    public Food() {
+    public Extract() {
         createTime = new Date();
         status = TaskStatus.CREATED;
     }

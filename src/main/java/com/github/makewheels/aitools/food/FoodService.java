@@ -41,7 +41,7 @@ public class FoodService {
     /**
      * 分析食物图片
      */
-    public String analyzeImage(String userContent, String imageUrl) {
+    public String analyzeImage(String prompt, String imageUrl) {
         String json = """
                 {
                     "model": "%s",
@@ -64,7 +64,7 @@ public class FoodService {
                     ]
                 }
                 """;
-        String body = String.format(json, GptService.MODEL, userContent, imageUrl);
+        String body = String.format(json, GptService.MODEL, prompt, imageUrl);
 
         return gptService.completion(body);
     }
@@ -89,7 +89,7 @@ public class FoodService {
         log.info("创建食物识别任务：" + food.getId() + " " + JSON.toJSONString(food));
 
         // 反向更新文件的key
-        file.setKey(OssPathUtil.getFoodImageFile(food, file));
+        file.setKey(OssPathUtil.getExtractImageFile(food, file));
         fileService.updateFile(file);
         return food;
     }
@@ -99,8 +99,8 @@ public class FoodService {
      */
     public void startTask(String taskId) {
         Food food = foodRepository.findById(taskId);
-        food.setAnalyseStartTime(new Date());
-        food.setStatus(FoodStatus.ANALYSING);
+        food.setStartTime(new Date());
+        food.setStatus(TaskStatus.RUNNING);
         food.setPrompt(PROMPT);
         mongoTemplate.save(food);
         log.info("启动食物识别任务：" + taskId + " " + JSON.toJSONString(food));
@@ -111,7 +111,7 @@ public class FoodService {
 
         food.setResult(analyzeResult);
         food.setFinishTime(new Date());
-        food.setStatus(FoodStatus.FINISHED);
+        food.setStatus(TaskStatus.FINISHED);
         mongoTemplate.save(food);
         log.info("食物识别任务完成：" + taskId + " " + JSON.toJSONString(food));
     }

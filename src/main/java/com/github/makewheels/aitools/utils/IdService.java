@@ -108,6 +108,10 @@ public class IdService {
         return "w_" + getCommonId();
     }
 
+    public synchronized String getExtractId() {
+        return "e_" + getCommonId();
+    }
+
     public synchronized String getWoodBookId() {
         return "wb_" + getCommonId();
     }
