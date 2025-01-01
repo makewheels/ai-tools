@@ -1,25 +1,32 @@
 package com.github.makewheels.aitools.word;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.github.makewheels.aitools.file.FileService;
+import com.github.makewheels.aitools.file.bean.CreateFileDTO;
+import com.github.makewheels.aitools.file.constants.FileType;
 import com.github.makewheels.aitools.gpt.GptService;
 import com.github.makewheels.aitools.gpt.Message;
 import com.github.makewheels.aitools.gpt.ROLE;
+import com.github.makewheels.aitools.utils.IdService;
+import com.github.makewheels.aitools.utils.OssPathUtil;
 import com.github.makewheels.aitools.word.bean.Meaning;
 import com.github.makewheels.aitools.word.bean.Word;
 import com.github.makewheels.aitools.word.response.MeaningResponse;
 import com.github.makewheels.aitools.word.response.WordResponse;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 
 @Service
+@Slf4j
 public class WordService {
     @Resource
     private GptService gptService;
@@ -27,6 +34,8 @@ public class WordService {
     private WordRepository wordRepository;
     @Resource
     private FileService fileService;
+    @Resource
+    private IdService idService;
 
     private static final String SYSTEM_PROMPT = """
             我正在做一个英语学习教程，面向初学者，需要你根据用户输入的单词，给出单词的几种含义发音例句等等信息，
@@ -164,15 +173,64 @@ public class WordService {
     }
 
     /**
+     * 添加新单词释义
+     */
+    public void addNewWords(List<String> wordContentList) {
+        List<Word> wordList = this.getWordExplain(StringUtils.join(wordContentList, ","));
+        log.info("开始添加新单词释义, 单词列表: {}", JSON.toJSONString(wordContentList));
+
+        // 保存到数据库
+        for (Word word : wordList) {
+            if (wordRepository.exist(word.getContent())) {
+                log.info("添加新单词释义, 单词已存在, 跳过 {}", word.getContent());
+                continue;
+            }
+
+            log.info("单词 {} 不存在, 开始添加到词库", word.getContent());
+            word.setId(idService.getWordId());
+            word.setCreateTime(new Date());
+            wordRepository.save(word);
+
+            // 处理图片
+            File imageFolder = new File(FileUtil.getTmpDir(), "ai-tools/images/" + System.currentTimeMillis());
+            Map<String, String> imageMap = this.getImage(wordList);
+            for (Meaning meaning : word.getMeanings()) {
+                String imagePromptMd5 = meaning.getImagePromptMd5();
+                File imageFile = new File(imageFolder, imagePromptMd5 + ".png");
+
+                // 下载图片
+                HttpUtil.downloadFile(imageMap.get(imagePromptMd5), imageFile);
+
+                // 上传对象存储
+                CreateFileDTO createFileDTO = new CreateFileDTO();
+                createFileDTO.setFileType(FileType.WORD_IMAGE);
+                createFileDTO.setExtension("png");
+                createFileDTO.setKey(OssPathUtil.getWordImageFile(word.getContent(), imagePromptMd5));
+                String imageFileId = fileService.createNewFile(createFileDTO).getId();
+                meaning.setImageFileId(imageFileId);
+                wordRepository.save(word);
+                fileService.uploadFile(imageFileId, imageFile);
+                FileUtil.del(imageFile);
+                fileService.uploadFinish(imageFileId);
+            }
+
+            FileUtil.del(imageFolder);
+        }
+
+        log.info("添加新单词释义完成");
+    }
+
+    /**
      * 获取图片
      *
-     * @return promptMd5 -> imageUrl
+     * @return map: promptMd5 -> imageUrl
      */
     public Map<String, String> getImage(List<Word> wordList) {
         Map<String, String> map = new HashMap<>();
         for (Word word : wordList) {
             for (Meaning meaning : word.getMeanings()) {
                 String imagePrompt = meaning.getImagePrompt();
+                log.info("生成单词释义图片, 单词: {}, 释义: {}", word.getContent(), meaning.getMeaningChinese());
                 String imageUrl = gptService.generateImage(imagePrompt);
 
                 String imagePromptMd5 = DigestUtil.md5Hex(meaning.getImagePrompt());
@@ -195,4 +253,5 @@ public class WordService {
         }
         return wordResponse;
     }
+
 }

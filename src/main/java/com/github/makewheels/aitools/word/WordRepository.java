@@ -24,6 +24,10 @@ public class WordRepository {
         mongoTemplate.save(word);
     }
 
+    public boolean exist(String content) {
+        return mongoTemplate.exists(Query.query(Criteria.where("content").is(content)), Word.class);
+    }
+
     public Word getByContent(String content) {
         Query query = Query.query(Criteria.where("content").is(content));
         return mongoTemplate.findOne(query, Word.class);

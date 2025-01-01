@@ -14,11 +14,10 @@ import com.github.makewheels.aitools.gpt.ROLE;
 import com.github.makewheels.aitools.user.UserHolder;
 import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.utils.OssPathUtil;
-import com.github.makewheels.aitools.wordbook.WordBook;
-import com.github.makewheels.aitools.wordbook.WordBookRepository;
+import com.github.makewheels.aitools.word.WordService;
+import com.github.makewheels.aitools.wordbook.WordBookService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -34,9 +33,11 @@ public class ExtractService {
     @Resource
     private IdService idService;
     @Resource
-    private WordBookRepository wordBookRepository;
-    @Resource
     private GptService gptService;
+    @Resource
+    private WordService wordService;
+    @Resource
+    private WordBookService wordBookService;
 
     private static final String PROMPT = """
             请从用户手写的图片中提取出单词，并返回一个JSON格式的列表，注意不要提取印刷的文本
@@ -85,7 +86,7 @@ public class ExtractService {
         task.setUserId(UserHolder.getUserId());
         task.setOriginalImageFileId(file.getId());
         extractRepository.save(task);
-        log.info("创建OCR识别单词任务: " + task.getId() + " " + JSON.toJSONString(task));
+        log.info("创建OCR识别单词任务: {} {}", task.getId(), JSON.toJSONString(task));
 
         // 反向更新文件的key
         file.setKey(OssPathUtil.getExtractImageFile(task, file));
@@ -121,28 +122,6 @@ public class ExtractService {
     }
 
     /**
-     * 把单词添加到单词本
-     */
-    public void addToWordBook(String userId, List<String> contentList) {
-        if (CollectionUtils.isEmpty(contentList)) {
-            return;
-        }
-
-        for (String content : contentList) {
-            if (wordBookRepository.exist(userId, content)) {
-                continue;
-            }
-
-            WordBook wordBook = new WordBook();
-            wordBook.setId(idService.getWoodBookId());
-            wordBook.setUserId(userId);
-            wordBook.setContent(content);
-
-            wordBookRepository.save(wordBook);
-        }
-    }
-
-    /**
      * 启动任务
      */
     public void startTask(String taskId) {
@@ -150,22 +129,25 @@ public class ExtractService {
         task.setStartTime(new Date());
         task.setStatus(TaskStatus.RUNNING);
         extractRepository.save(task);
-        log.info("启动OCR识别单词任务 taskId = " + taskId + ", 任务 = " + JSON.toJSONString(task));
+        log.info("启动OCR识别单词任务 taskId = {}, 任务 = {}", taskId, JSON.toJSONString(task));
 
         File file = fileService.getById(task.getOriginalImageFileId());
         String imageUrl = fileService.getPresignedUrlByKey(file.getKey());
 
         // 提取单词
         List<String> resultWordList = this.extractWords(imageUrl);
-        log.info("OCR提取到单词结果: " + JSON.toJSONString(resultWordList));
+        log.info("OCR提取到单词结果: {}", JSON.toJSONString(resultWordList));
         task.setResultWordList(resultWordList);
         task.setFinishTime(new Date());
         task.setStatus(TaskStatus.FINISHED);
         extractRepository.save(task);
-        log.info("OCR识别单词任务完成: " + taskId + " " + JSON.toJSONString(task));
+        log.info("OCR识别单词任务完成: {} {}", taskId, JSON.toJSONString(task));
 
         // 保存到单词本
-        this.addToWordBook(task.getUserId(), resultWordList);
+        wordBookService.addToWordBook(task.getUserId(), resultWordList);
+
+        // 添加新单词的释义
+        wordService.addNewWords(resultWordList);
     }
 
     public Extract getById(String taskId) {

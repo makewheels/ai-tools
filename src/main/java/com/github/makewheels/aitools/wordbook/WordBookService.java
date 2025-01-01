@@ -1,11 +1,13 @@
 package com.github.makewheels.aitools.wordbook;
 
 import com.github.makewheels.aitools.user.UserHolder;
+import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.word.WordRepository;
 import com.github.makewheels.aitools.word.bean.Word;
 import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ public class WordBookService {
     private WordBookRepository wordBookRepository;
     @Resource
     private WordRepository wordRepository;
+    @Resource
+    private IdService idService;
 
     public List<WordBookResponse> list() {
         List<WordBookResponse> result = new ArrayList<>();
@@ -37,5 +41,27 @@ public class WordBookService {
         }
 
         return result;
+    }
+
+    /**
+     * 把单词添加到单词本
+     */
+    public void addToWordBook(String userId, List<String> contentList) {
+        if (CollectionUtils.isEmpty(contentList)) {
+            return;
+        }
+
+        for (String content : contentList) {
+            if (wordBookRepository.exist(userId, content)) {
+                continue;
+            }
+
+            WordBook wordBook = new WordBook();
+            wordBook.setId(idService.getWoodBookId());
+            wordBook.setUserId(userId);
+            wordBook.setContent(content);
+
+            wordBookRepository.save(wordBook);
+        }
     }
 }

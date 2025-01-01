@@ -5,8 +5,8 @@ package com.github.makewheels.aitools.file.constants;
  */
 public interface FileStatus {
     //数据库已创建
-    String CREATED = "CREATED";
+    String CREATED = "created";
 
     //阿里云对象存储已就绪
-    String READY = "READY";
+    String READY = "ready";
 }
