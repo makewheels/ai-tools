@@ -241,17 +241,20 @@ public class WordService {
         return map;
     }
 
-    private WordResponse convertToResponse(Word word) {
-        return JSON.parseObject(JSON.toJSONString(word), WordResponse.class);
-    }
-
-    public WordResponse randomPick() {
-        Word word = wordRepository.randomPick();
-        WordResponse wordResponse = this.convertToResponse(word);
+    public WordResponse convertWordToResponse(Word word) {
+        if (word == null) {
+            return null;
+        }
+        WordResponse wordResponse = JSON.parseObject(JSON.toJSONString(word), WordResponse.class);
         for (MeaningResponse meaning : wordResponse.getMeanings()) {
             meaning.setImageUrl(fileService.getPresignedUrlByFileId(meaning.getImageFileId()));
         }
         return wordResponse;
+    }
+
+    public WordResponse randomPick() {
+        Word word = wordRepository.randomPick();
+        return this.convertWordToResponse(word);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.github.makewheels.aitools.wordbook;
 
+import cn.hutool.core.util.RandomUtil;
 import com.github.makewheels.aitools.utils.IdService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,22 @@ public class WordBookRepository {
                         .and("content").is(content)
         );
         return mongoTemplate.exists(query, WordBook.class);
+    }
+
+    public WordBook randomPick(String userId) {
+        // 获取总数
+        Query query = Query.query(Criteria.where("userId").is(userId));
+        long count = mongoTemplate.count(query, WordBook.class);
+        if (count == 0) {
+            return null;
+        }
+
+        // 生成一个随机的 offset 值
+        long randomOffset = RandomUtil.randomLong(count);
+
+        // 使用 skip 和 limit 获取一条记录
+        query.skip(randomOffset).limit(1);
+        return mongoTemplate.findOne(query, WordBook.class);
     }
 
 }

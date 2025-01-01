@@ -3,7 +3,9 @@ package com.github.makewheels.aitools.wordbook;
 import com.github.makewheels.aitools.user.UserHolder;
 import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.word.WordRepository;
+import com.github.makewheels.aitools.word.WordService;
 import com.github.makewheels.aitools.word.bean.Word;
+import com.github.makewheels.aitools.word.response.WordResponse;
 import com.google.common.collect.Lists;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +25,10 @@ public class WordBookService {
     private WordRepository wordRepository;
     @Resource
     private IdService idService;
+    @Resource
+    private WordService wordService;
 
-    public List<WordBookResponse> list() {
+    public List<WordBookResponse> listMyWordBook() {
         List<WordBookResponse> result = new ArrayList<>();
 
         List<WordBook> wordBookList = wordBookRepository.listByUserId(UserHolder.getUserId());
@@ -63,5 +67,15 @@ public class WordBookService {
 
             wordBookRepository.save(wordBook);
         }
+    }
+
+    public WordResponse randomPick() {
+        WordBook wordBook = wordBookRepository.randomPick(UserHolder.getUserId());
+        if (wordBook == null) {
+            return null;
+        }
+        String content = wordBook.getContent();
+        Word word = wordRepository.getByContent(content);
+        return wordService.convertWordToResponse(word);
     }
 }

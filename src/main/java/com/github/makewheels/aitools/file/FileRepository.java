@@ -18,6 +18,9 @@ public class FileRepository {
      * 根据id查文件
      */
     public File getById(String id) {
+        if (id == null){
+            return null;
+        }
         return mongoTemplate.findById(id, File.class);
     }
 

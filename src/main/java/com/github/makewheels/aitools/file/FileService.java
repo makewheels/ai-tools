@@ -72,6 +72,9 @@ public class FileService {
     }
 
     public String getPresignedUrlByFileId(String fileId) {
+        if (fileId == null){
+            return null;
+        }
         File file = getById(fileId);
         return getPresignedUrlByKey(file.getKey());
     }

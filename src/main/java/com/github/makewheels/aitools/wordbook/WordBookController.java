@@ -1,6 +1,7 @@
 package com.github.makewheels.aitools.wordbook;
 
 import com.github.makewheels.aitools.system.response.Result;
+import com.github.makewheels.aitools.word.response.WordResponse;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,8 +15,13 @@ public class WordBookController {
     @Resource
     private WordBookService wordBookService;
 
-    @GetMapping("list")
-    public Result<List<WordBookResponse>> list() {
-        return Result.ok(wordBookService.list());
+    @GetMapping("listMyWordBook")
+    public Result<List<WordBookResponse>> listMyWordBook() {
+        return Result.ok(wordBookService.listMyWordBook());
+    }
+
+    @GetMapping("randomPick")
+    public Result<WordResponse> randomPick() {
+        return Result.ok(wordBookService.randomPick());
     }
 }
