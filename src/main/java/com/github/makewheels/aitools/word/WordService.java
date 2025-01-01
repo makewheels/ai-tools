@@ -179,7 +179,10 @@ public class WordService {
         List<Word> wordList = this.getWordExplain(StringUtils.join(wordContentList, ","));
         log.info("开始添加新单词释义, 单词列表: {}", JSON.toJSONString(wordContentList));
 
-        // 保存到数据库
+        // 生成单词图片
+        Map<String, String> imageMap = this.getImage(wordList);
+
+        // 添加到词库
         for (Word word : wordList) {
             if (wordRepository.exist(word.getContent())) {
                 log.info("添加新单词释义, 单词已存在, 跳过 {}", word.getContent());
@@ -193,7 +196,6 @@ public class WordService {
 
             // 处理图片
             File imageFolder = new File(FileUtil.getTmpDir(), "ai-tools/images/" + System.currentTimeMillis());
-            Map<String, String> imageMap = this.getImage(wordList);
             for (Meaning meaning : word.getMeanings()) {
                 String imagePromptMd5 = meaning.getImagePromptMd5();
                 File imageFile = new File(imageFolder, imagePromptMd5 + ".png");
