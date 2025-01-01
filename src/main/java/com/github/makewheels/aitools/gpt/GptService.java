@@ -28,7 +28,13 @@ public class GptService {
      */
     @Retryable
     private String postRequest(String url, String body) {
-        body = JSON.toJSONString(JSONObject.parseObject(body));
+        try {
+            body = JSON.toJSONString(JSONObject.parseObject(body));
+        } catch (Exception e) {
+            log.error("JSON转换错误", e);
+            log.error(body);
+            throw new IllegalArgumentException("JSON转换错误", e);
+        }
 
         log.info("请求GPT url = " + url);
         log.info("请求GPT body = " + body);
@@ -82,7 +88,7 @@ public class GptService {
                 }
                 """;
         String body = String.format(json, MODEL, JSON.toJSONString(messageList), jsonSchema);
-        return completion(body);
+        return this.completion(body);
     }
 
     /**

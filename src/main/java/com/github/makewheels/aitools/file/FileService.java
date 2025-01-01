@@ -52,7 +52,7 @@ public class FileService {
 
     public void deleteFile(String fileId) {
         File file = fileRepository.getById(fileId);
-        if(file == null){
+        if (file == null) {
             return;
         }
         ossService.deleteByKey(file.getKey());
@@ -67,13 +67,13 @@ public class FileService {
         return fileRepository.getById(id);
     }
 
+    public String getPresignedUrlByKey(String key) {
+        return ossService.generatePresignedUrl(key, Duration.ofMinutes(10));
+    }
+
     public String getPresignedUrlByFileId(String fileId) {
         File file = getById(fileId);
         return getPresignedUrlByKey(file.getKey());
-    }
-
-    public String getPresignedUrlByKey(String key) {
-        return ossService.generatePresignedUrl(key, Duration.ofMinutes(10));
     }
 
     /**
@@ -82,7 +82,7 @@ public class FileService {
     public JSONObject getUploadCredentials(String fileId) {
         File file = fileRepository.getById(fileId);
         JSONObject credentials = ossService.generateUploadCredentials(file.getKey());
-        log.info("生成上传凭证, fileId = " + fileId + ", " + JSON.toJSONString(credentials));
+        log.info("获取上传凭证, fileId = " + fileId + ", " + JSON.toJSONString(credentials));
         return credentials;
     }
 

@@ -16,10 +16,14 @@ public class WordBook {
     private String id;
 
     @Indexed
-    private String content;
-
-    @Indexed
     private String userId;
 
+    @Indexed
+    private String content;
+
     private Date createTime;
+
+    public WordBook() {
+        this.createTime = new Date();
+    }
 }

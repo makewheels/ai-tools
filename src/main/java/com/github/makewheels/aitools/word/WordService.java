@@ -66,77 +66,76 @@ public class WordService {
             }
             """;
 
-    private static final String WORD_JSON_SCHEMA =
-            """
-                    {
-                      "type": "object",
-                      "properties": {
-                        "results": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "content": {
-                                "type": "string",
-                                "description": "The word being defined"
-                              },
-                              "pronunciation": {
-                                "type": "string",
-                                "description": "The phonetic pronunciation of the word"
-                              },
-                              "meanings": {
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "partOfSpeech": {
-                                      "type": "string",
-                                      "description": "The part of speech (e.g., noun, verb, etc.)"
-                                    },
-                                    "meaningChinese": {
-                                      "type": "string",
-                                      "description": "The meaning of the word in Chinese"
-                                    },
-                                    "exampleEnglish": {
-                                      "type": "string",
-                                      "description": "An example sentence in English"
-                                    },
-                                    "exampleChinese": {
-                                      "type": "string",
-                                      "description": "The example sentence translated into Chinese"
-                                    },
-                                    "imagePrompt": {
-                                      "type": "string",
-                                      "description": "A visual description for generating an image that illustrates the example sentence"
-                                    }
-                                  },
-                                  "required": [
-                                    "partOfSpeech",
-                                    "meaningChinese",
-                                    "exampleEnglish",
-                                    "exampleChinese",
-                                    "imagePrompt"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                "description": "A list of meanings for the word"
-                              }
-                            },
-                            "required": [
-                              "content",
-                              "pronunciation",
-                              "meanings"
-                            ],
-                            "additionalProperties": false
-                          }
-                        }
+    private static final String WORD_JSON_SCHEMA = """
+            {
+              "type": "object",
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "content": {
+                        "type": "string",
+                        "description": "The word being defined"
                       },
-                      "required": [
-                        "results"
-                      ],
-                      "additionalProperties": false
-                    }
-                    """;
+                      "pronunciation": {
+                        "type": "string",
+                        "description": "The phonetic pronunciation of the word"
+                      },
+                      "meanings": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "partOfSpeech": {
+                              "type": "string",
+                              "description": "The part of speech (e.g., noun, verb, etc.)"
+                            },
+                            "meaningChinese": {
+                              "type": "string",
+                              "description": "The meaning of the word in Chinese"
+                            },
+                            "exampleEnglish": {
+                              "type": "string",
+                              "description": "An example sentence in English"
+                            },
+                            "exampleChinese": {
+                              "type": "string",
+                              "description": "The example sentence translated into Chinese"
+                            },
+                            "imagePrompt": {
+                              "type": "string",
+                              "description": "A visual description for generating an image that illustrates the example sentence"
+                            }
+                          },
+                          "required": [
+                            "partOfSpeech",
+                            "meaningChinese",
+                            "exampleEnglish",
+                            "exampleChinese",
+                            "imagePrompt"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "description": "A list of meanings for the word"
+                      }
+                    },
+                    "required": [
+                      "content",
+                      "pronunciation",
+                      "meanings"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "results"
+              ],
+              "additionalProperties": false
+            }
+            """;
 
     public List<Word> getWordExplain(String wordList) {
         List<Message> messageList = new ArrayList<>();

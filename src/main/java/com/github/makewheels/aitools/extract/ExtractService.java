@@ -1,6 +1,8 @@
 package com.github.makewheels.aitools.extract;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.makewheels.aitools.file.FileService;
 import com.github.makewheels.aitools.file.bean.CreateFileDTO;
 import com.github.makewheels.aitools.file.bean.File;
@@ -12,9 +14,11 @@ import com.github.makewheels.aitools.gpt.ROLE;
 import com.github.makewheels.aitools.user.UserHolder;
 import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.utils.OssPathUtil;
+import com.github.makewheels.aitools.wordbook.WordBook;
 import com.github.makewheels.aitools.wordbook.WordBookRepository;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -45,6 +49,23 @@ public class ExtractService {
             """;
 
     private static final String JSON_SCHEMA = """
+            {
+              "type": "object",
+              "properties": {
+                "words": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "The word extracted from the image",
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "words"
+              ],
+              "additionalProperties": false
+            }
             """;
 
     /**
@@ -75,26 +96,50 @@ public class ExtractService {
     /**
      * 请求gpt
      */
-    public String requestGpt(String imageUrl) {
+    public List<String> extractWords(String imageUrl) {
         Message message = new Message();
         message.setRole(ROLE.USER);
-        String content = String.format("""
-                [
-                        {
-                            "type": "text",
-                            "text": "%s"
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": "%s"
-                            }
-                        }
-                    ]
-                """, PROMPT, imageUrl);
-        message.setContent(content);
 
-        return gptService.completionJsonSchema(List.of(message), null);
+        JSONArray contentList = new JSONArray();
+        JSONObject contentText = new JSONObject();
+        contentText.put("type", "text");
+        contentText.put("text", PROMPT);
+
+        JSONObject contentImage = new JSONObject();
+        contentImage.put("type", "image_url");
+        JSONObject imageUrlJSONObject = new JSONObject();
+        imageUrlJSONObject.put("url", imageUrl);
+        contentImage.put("image_url", imageUrlJSONObject);
+
+        contentList.add(contentText);
+        contentList.add(contentImage);
+
+        message.setContent(contentList);
+
+        String response = gptService.completionJsonSchema(List.of(message), JSON_SCHEMA);
+        return JSON.parseObject(response).getJSONArray("words").toJavaList(String.class);
+    }
+
+    /**
+     * 把单词添加到单词本
+     */
+    public void addToWordBook(String userId, List<String> contentList) {
+        if (CollectionUtils.isEmpty(contentList)) {
+            return;
+        }
+
+        for (String content : contentList) {
+            if (wordBookRepository.exist(userId, content)) {
+                continue;
+            }
+
+            WordBook wordBook = new WordBook();
+            wordBook.setId(idService.getWoodBookId());
+            wordBook.setUserId(userId);
+            wordBook.setContent(content);
+
+            wordBookRepository.save(wordBook);
+        }
     }
 
     /**
@@ -105,14 +150,25 @@ public class ExtractService {
         task.setStartTime(new Date());
         task.setStatus(TaskStatus.RUNNING);
         extractRepository.save(task);
-        log.info("启动OCR识别单词任务: " + taskId + "任务: " + JSON.toJSONString(task));
+        log.info("启动OCR识别单词任务 taskId = " + taskId + ", 任务 = " + JSON.toJSONString(task));
 
         File file = fileService.getById(task.getOriginalImageFileId());
         String imageUrl = fileService.getPresignedUrlByKey(file.getKey());
 
+        // 提取单词
+        List<String> resultWordList = this.extractWords(imageUrl);
+        log.info("OCR提取到单词结果: " + JSON.toJSONString(resultWordList));
+        task.setResultWordList(resultWordList);
         task.setFinishTime(new Date());
         task.setStatus(TaskStatus.FINISHED);
         extractRepository.save(task);
         log.info("OCR识别单词任务完成: " + taskId + " " + JSON.toJSONString(task));
+
+        // 保存到单词本
+        this.addToWordBook(task.getUserId(), resultWordList);
+    }
+
+    public Extract getById(String taskId) {
+        return extractRepository.findById(taskId);
     }
 }
