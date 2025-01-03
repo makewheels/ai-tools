@@ -179,9 +179,6 @@ public class WordService {
         List<Word> wordList = this.getWordExplain(StringUtils.join(wordContentList, ","));
         log.info("开始添加新单词释义, 单词列表: {}", JSON.toJSONString(wordContentList));
 
-        // 生成单词图片
-        Map<String, String> imageMap = this.getImage(wordList);
-
         // 添加到词库
         for (Word word : wordList) {
             if (wordRepository.exist(word.getContent())) {
@@ -199,6 +196,9 @@ public class WordService {
             for (Meaning meaning : word.getMeanings()) {
                 String imagePromptMd5 = meaning.getImagePromptMd5();
                 File imageFile = new File(imageFolder, imagePromptMd5 + ".png");
+
+                // 生成单词图片
+                Map<String, String> imageMap = this.getImage(word);
 
                 // 下载图片
                 HttpUtil.downloadFile(imageMap.get(imagePromptMd5), imageFile);
@@ -241,6 +241,10 @@ public class WordService {
             }
         }
         return map;
+    }
+
+    public Map<String, String> getImage(Word word) {
+        return getImage(List.of(word));
     }
 
     public WordResponse convertWordToResponse(Word word) {
