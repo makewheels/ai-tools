@@ -8,9 +8,9 @@ import com.github.makewheels.aitools.file.bean.CreateFileDTO;
 import com.github.makewheels.aitools.file.bean.File;
 import com.github.makewheels.aitools.file.constants.FileType;
 import com.github.makewheels.aitools.food.TaskStatus;
-import com.github.makewheels.aitools.gpt.GptService;
-import com.github.makewheels.aitools.gpt.Message;
-import com.github.makewheels.aitools.gpt.ROLE;
+import com.github.makewheels.aitools.gpt.service.GptService;
+import com.github.makewheels.aitools.gpt.service.Message;
+import com.github.makewheels.aitools.gpt.service.Role;
 import com.github.makewheels.aitools.user.UserHolder;
 import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.utils.OssPathUtil;
@@ -99,7 +99,7 @@ public class ExtractService {
      */
     public List<String> extractWords(String imageUrl) {
         Message message = new Message();
-        message.setRole(ROLE.USER);
+        message.setRole(Role.USER);
 
         JSONArray contentList = new JSONArray();
         JSONObject contentText = new JSONObject();

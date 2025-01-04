@@ -1,4 +1,4 @@
-package com.github.makewheels.aitools.gpt;
+package com.github.makewheels.aitools.gpt.service;
 
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -16,12 +16,6 @@ import java.util.List;
 public class GptService {
     @Value("${spring.ai.openai.api-key}")
     private String apiKey;
-
-    private static final String BASE_URL = "https://api.open-proxy.cn";
-    private static final String CHAT_COMPLETIONS_URL = BASE_URL + "/v1/chat/completions";
-    private static final String IMAGES_GENERATIONS_URL = BASE_URL + "/v1/images/generations";
-
-    public static final String MODEL = "gpt-4o-2024-11-20";
 
     /**
      * 发送post请求到OpenAI
@@ -65,7 +59,7 @@ public class GptService {
      * 向gpt发请求
      */
     public String completion(String body) {
-        String response = this.postRequest(CHAT_COMPLETIONS_URL, body);
+        String response = this.postRequest(GptConstants.CHAT_COMPLETIONS_URL, body);
         return this.extractContentFromResponse(JSONObject.parseObject(response));
     }
 
@@ -87,7 +81,7 @@ public class GptService {
                   }
                 }
                 """;
-        String body = String.format(json, MODEL, JSON.toJSONString(messageList), jsonSchema);
+        String body = String.format(json, GptConstants.MODEL, JSON.toJSONString(messageList), jsonSchema);
         return this.completion(body);
     }
 
@@ -105,7 +99,7 @@ public class GptService {
                 }
                 """;
         String body = String.format(json, prompt);
-        String response = this.postRequest(IMAGES_GENERATIONS_URL, body);
+        String response = this.postRequest(GptConstants.IMAGES_GENERATIONS_URL, body);
         return JSON.parseObject(response).getJSONArray("data").getJSONObject(0).getString("url");
     }
 

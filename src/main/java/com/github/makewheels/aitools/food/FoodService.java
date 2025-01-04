@@ -5,7 +5,8 @@ import com.github.makewheels.aitools.file.FileService;
 import com.github.makewheels.aitools.file.bean.CreateFileDTO;
 import com.github.makewheels.aitools.file.bean.File;
 import com.github.makewheels.aitools.file.constants.FileType;
-import com.github.makewheels.aitools.gpt.GptService;
+import com.github.makewheels.aitools.gpt.service.GptConstants;
+import com.github.makewheels.aitools.gpt.service.GptService;
 import com.github.makewheels.aitools.user.UserHolder;
 import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.utils.OssPathUtil;
@@ -64,7 +65,7 @@ public class FoodService {
                     ]
                 }
                 """;
-        String body = String.format(json, GptService.MODEL, prompt, imageUrl);
+        String body = String.format(json, GptConstants.MODEL, prompt, imageUrl);
 
         return gptService.completion(body);
     }

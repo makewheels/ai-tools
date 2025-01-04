@@ -1,4 +1,4 @@
-package com.github.makewheels.aitools.gpt;
+package com.github.makewheels.aitools.gpt.service;
 
 import lombok.Getter;
 import lombok.Setter;

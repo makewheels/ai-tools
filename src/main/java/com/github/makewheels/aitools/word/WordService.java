@@ -8,9 +8,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.github.makewheels.aitools.file.FileService;
 import com.github.makewheels.aitools.file.bean.CreateFileDTO;
 import com.github.makewheels.aitools.file.constants.FileType;
-import com.github.makewheels.aitools.gpt.GptService;
-import com.github.makewheels.aitools.gpt.Message;
-import com.github.makewheels.aitools.gpt.ROLE;
+import com.github.makewheels.aitools.gpt.service.GptService;
+import com.github.makewheels.aitools.gpt.service.Message;
+import com.github.makewheels.aitools.gpt.service.Role;
 import com.github.makewheels.aitools.utils.IdService;
 import com.github.makewheels.aitools.utils.OssPathUtil;
 import com.github.makewheels.aitools.word.bean.Meaning;
@@ -149,11 +149,11 @@ public class WordService {
     public List<Word> getWordExplain(String wordList) {
         List<Message> messageList = new ArrayList<>();
         Message systemMessage = new Message();
-        systemMessage.setRole(ROLE.SYSTEM);
+        systemMessage.setRole(Role.SYSTEM);
         systemMessage.setContent(SYSTEM_PROMPT);
 
         Message userMessage = new Message();
-        userMessage.setRole(ROLE.USER);
+        userMessage.setRole(Role.USER);
         userMessage.setContent("给我这几个单词的含义: " + wordList);
 
         messageList.add(systemMessage);

@@ -1,6 +1,6 @@
-package com.github.makewheels.aitools.gpt;
+package com.github.makewheels.aitools.gpt.service;
 
-public interface ROLE {
+public interface Role {
     String USER = "user";
     String ASSISTANT = "assistant";
     String SYSTEM = "system";
