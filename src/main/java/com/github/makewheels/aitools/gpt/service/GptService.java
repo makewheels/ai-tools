@@ -65,18 +65,14 @@ public class GptService {
     /**
      * 请求GPT：简单content内容
      */
-    public String completionWithSimpleContent(String content){
-        return this.completionWithCompleteBody("""
-                {
-                  "model": "%s",
-                  "messages": [
-                    {
-                      "role": "user",
-                      "content": "%s"
-                    }
-                  ]
-                }
-                """.formatted(GptConstants.MODEL, content));
+    public String completionWithSimpleContent(String content) {
+        JSONObject body = new JSONObject();
+        body.put("model", GptConstants.MODEL);
+        Message message = new Message();
+        message.setRole(Role.USER);
+        message.setContent(content);
+        body.put("messages", List.of(message));
+        return this.completionWithCompleteBody(body.toJSONString());
     }
 
     /**
