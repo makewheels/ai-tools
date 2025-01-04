@@ -24,7 +24,7 @@ public class ArgueService {
     private Message getSystemMessage(Argue argue, String side) {
         String content = """
                 你正在参加一场辩论会赛，用户的输入就是对方的观点，你直接回复内容就行了，不要说别的。
-                要尽可能有理有据有节的说服对方，让辩论赛尽可能精彩，有看点。
+                要尽可能有理有据有节的说服对方，让辩论赛尽可能精彩，有看点，尽量用大众能看懂的语言和例子。
                 你每次回答要尽可能简短，不要特别长，不要超过130字。
                 这场辩论赛的主题是：%s
                 正方观点是：%s
@@ -42,9 +42,9 @@ public class ArgueService {
 
     public Argue getArgue() {
         Argue argue = new Argue();
-        argue.setTopic("地球是平的还是圆的？");
-        argue.setPositiveArgument("地球是平的。");
-        argue.setNegativeArgument("地球是圆的。");
+        argue.setTopic("社交媒体对人际关系有害吗？");
+        argue.setPositiveArgument("社交媒体加剧了人们的孤独感和社交压力，破坏了真实的人际互动。");
+        argue.setNegativeArgument("社交媒体提供了更便捷的沟通渠道，促进了全球互联互通，增强了人际关系的多样性。");
         return argue;
     }
 
@@ -84,9 +84,9 @@ public class ArgueService {
         String negativeResponse = null;
         for (int i = 0; i < 3; i++) {
             positiveResponse = sessionService.request(positiveSession, negativeResponse);
-            conversation.add(ArgueSide.POSITIVE_SIDE + "发言" + argue.getPositiveArgument() + ": " + positiveResponse);
+            conversation.add(ArgueSide.POSITIVE_SIDE + "发言: " + positiveResponse);
             negativeResponse = sessionService.request(negativeSession, positiveResponse);
-            conversation.add(ArgueSide.NEGATIVE_SIDE + "发言" + argue.getNegativeArgument() + ": " + negativeResponse);
+            conversation.add(ArgueSide.NEGATIVE_SIDE + "发言: " + negativeResponse);
         }
 
         // 获取评委结论
