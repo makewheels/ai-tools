@@ -30,8 +30,7 @@ public class GptService {
             throw new IllegalArgumentException("JSON转换错误", e);
         }
 
-        log.info("请求GPT url = " + url);
-        log.info("请求GPT body = " + body);
+        log.info("请求GPT url = {}, body = {}", url, body);
         HttpResponse httpResponse = HttpUtil.createPost(url)
                 .bearerAuth(apiKey)
                 .body(body)
