@@ -1,5 +1,6 @@
 package com.github.makewheels.aitools.argue;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.makewheels.aitools.gpt.service.GptConstants;
 import com.github.makewheels.aitools.gpt.service.GptService;
 import com.github.makewheels.aitools.gpt.service.Message;
@@ -41,10 +42,39 @@ public class ArgueService {
     }
 
     public Argue getArgue() {
+        String jsonSchema = """
+                {
+                  "type": "object",
+                  "properties": {
+                    "topic": {
+                      "type": "string",
+                      "description": "议题的主题，表示讨论的中心问题。"
+                    },
+                    "positiveArgument": {
+                      "type": "string",
+                      "description": "正方论点，支持该议题的观点。"
+                    },
+                    "negativeArgument": {
+                      "type": "string",
+                      "description": "反方论点，反对该议题的观点。"
+                    }
+                  },
+                  "required": ["topic", "positiveArgument", "negativeArgument"],
+                  "additionalProperties": false
+                }
+                """;
+
+        Message message = new Message();
+        message.setRole(Role.USER);
+        message.setContent("请生成一个辩论赛主题，要包含主题，正方观点，反方观点三个部分");
+
+        String json = gptService.completionJsonSchema(List.of(message), jsonSchema);
+        JSONObject response = JSONObject.parseObject(json);
+
         Argue argue = new Argue();
-        argue.setTopic("社交媒体对人际关系有害吗？");
-        argue.setPositiveArgument("社交媒体加剧了人们的孤独感和社交压力，破坏了真实的人际互动。");
-        argue.setNegativeArgument("社交媒体提供了更便捷的沟通渠道，促进了全球互联互通，增强了人际关系的多样性。");
+        argue.setTopic(response.getString("topic"));
+        argue.setPositiveArgument(response.getString("positiveArgument"));
+        argue.setNegativeArgument(response.getString("negativeArgument"));
         return argue;
     }
 
@@ -71,6 +101,7 @@ public class ArgueService {
 
     public void argue() {
         Argue argue = this.getArgue();
+        log.info("获取到的辩论主题：" + JSONObject.toJSONString(argue));
         Session positiveSession = this.createSession(argue, ArgueSide.POSITIVE_SIDE);
         Session negativeSession = this.createSession(argue, ArgueSide.NEGATIVE_SIDE);
 
@@ -78,20 +109,20 @@ public class ArgueService {
         conversation.add("本场辩论赛的主题是：" + argue.getTopic());
         conversation.add("正方观点：" + argue.getPositiveArgument());
         conversation.add("反方观点：" + argue.getNegativeArgument());
-        conversation.add("Let's start the debate!");
+        conversation.add("Let's start the debate!\n");
 
         String positiveResponse;
         String negativeResponse = null;
         for (int i = 0; i < 3; i++) {
             positiveResponse = sessionService.request(positiveSession, negativeResponse);
-            conversation.add(ArgueSide.POSITIVE_SIDE + "发言: " + positiveResponse);
+            conversation.add(ArgueSide.POSITIVE_SIDE + "发言: " + positiveResponse + "\n");
             negativeResponse = sessionService.request(negativeSession, positiveResponse);
-            conversation.add(ArgueSide.NEGATIVE_SIDE + "发言: " + negativeResponse);
+            conversation.add(ArgueSide.NEGATIVE_SIDE + "发言: " + negativeResponse+ "\n");
         }
 
         // 获取评委结论
         String comment = this.getComment(conversation);
-        conversation.add("评委结论: " + comment);
+        conversation.add("\n评委结论: " + comment);
 
         for (int i = 0; i < 3; i++) {
             log.info("===========================");
