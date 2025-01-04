@@ -50,16 +50,33 @@ public class GptService {
     private String extractContentFromResponse(JSONObject responseFromOpenAI) {
         String content = responseFromOpenAI.getJSONArray("choices").getJSONObject(0)
                 .getJSONObject("message").getString("content");
-        log.info("从GPT响应中提取到content " + content);
+        log.info("从GPT响应中提取到content: " + content);
         return content;
     }
 
     /**
-     * 向gpt发请求
+     * 请求GPT：完整body
      */
-    public String completion(String body) {
+    public String completionWithCompleteBody(String body) {
         String response = this.postRequest(GptConstants.CHAT_COMPLETIONS_URL, body);
         return this.extractContentFromResponse(JSONObject.parseObject(response));
+    }
+
+    /**
+     * 请求GPT：简单content内容
+     */
+    public String completionWithSimpleContent(String content){
+        return this.completionWithCompleteBody("""
+                {
+                  "model": "%s",
+                  "messages": [
+                    {
+                      "role": "user",
+                      "content": "%s"
+                    }
+                  ]
+                }
+                """.formatted(GptConstants.MODEL, content));
     }
 
     /**
@@ -81,7 +98,7 @@ public class GptService {
                 }
                 """;
         String body = String.format(json, GptConstants.MODEL, JSON.toJSONString(messageList), jsonSchema);
-        return this.completion(body);
+        return this.completionWithCompleteBody(body);
     }
 
     /**

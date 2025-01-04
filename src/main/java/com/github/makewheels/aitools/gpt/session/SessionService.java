@@ -42,7 +42,7 @@ public class SessionService {
     public String request(Session session, String userContent) {
         this.addMessage(session, Role.USER, userContent);
 
-        String assistantContent = gptService.completion(JSON.toJSONString(session));
+        String assistantContent = gptService.completionWithCompleteBody(JSON.toJSONString(session));
         this.addMessage(session, Role.ASSISTANT, assistantContent);
 
         return assistantContent;

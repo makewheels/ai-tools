@@ -67,7 +67,7 @@ public class FoodService {
                 """;
         String body = String.format(json, GptConstants.MODEL, prompt, imageUrl);
 
-        return gptService.completion(body);
+        return gptService.completionWithCompleteBody(body);
     }
 
     /**
